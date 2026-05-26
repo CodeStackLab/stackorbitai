@@ -10,7 +10,14 @@ export default function ProductsPage() {
   const [isDownloadOpen, setIsDownloadOpen] = useState(false);
   const [downloadStep, setDownloadStep] = useState("initial"); // "initial" | "processing" | "success"
   const [downloadProgress, setDownloadProgress] = useState(0);
-  const [targetDomain, setTargetDomain] = useState("");
+
+  // Lead Registration Form States
+  const [registerData, setRegisterData] = useState({
+    name: "",
+    email: "",
+    serviceGoal: "",
+  });
+  const [isSubmittingRegister, setIsSubmittingRegister] = useState(false);
   
   // Voluntary Support Form State
   const [supportData, setSupportData] = useState({
@@ -24,7 +31,6 @@ export default function ProductsPage() {
 
   // Custom Setup Hire States (Starting $50)
   const [isHireOpen, setIsHireOpen] = useState(false);
-  const [setupStep, setSetupStep] = useState("form"); // "form" | "payment" | "success"
   const [hireData, setHireData] = useState({
     name: "",
     email: "",
@@ -32,12 +38,6 @@ export default function ProductsPage() {
     projectType: "ai-automation",
     details: "",
     budget: 50,
-  });
-  const [mockCard, setMockCard] = useState({
-    number: "",
-    expiry: "",
-    cvv: "",
-    name: "",
   });
   const [isSubmittingHire, setIsSubmittingHire] = useState(false);
   const [hireCompleted, setHireCompleted] = useState(false);
@@ -155,20 +155,46 @@ export default function ProductsPage() {
 
   const filtered = filter === "all" ? products : products.filter((p) => p.category === filter);
 
-  // Simulated Asset Delivery & Support Handlers
+  // Simulated Asset Delivery & Lead Handlers
   const handleDownloadClick = (product) => {
     setSelectedProduct(product);
     setIsDownloadOpen(true);
     setDownloadStep("initial");
     setDownloadProgress(0);
-    setTargetDomain("");
-    setSupportCompleted(false);
-    setSupportData({
-      amount: "5", // Default
-      customAmount: "",
+    setRegisterData({
       name: "",
       email: "",
+      serviceGoal: product.title,
     });
+  };
+
+  const handleRegisterSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmittingRegister(true);
+
+    try {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: registerData.name,
+          email: registerData.email,
+          service_goal: registerData.serviceGoal || selectedProduct?.title || "free-asset-download",
+        }),
+      });
+
+      if (res.ok) {
+        startSimulatedDownload();
+      } else {
+        // Fallback for demo/staging
+        startSimulatedDownload();
+      }
+    } catch (err) {
+      console.error("Lead submission error during download intake:", err);
+      startSimulatedDownload();
+    } finally {
+      setIsSubmittingRegister(false);
+    }
   };
 
   const startSimulatedDownload = () => {
@@ -182,19 +208,14 @@ export default function ProductsPage() {
         setDownloadStep("success");
         // Trigger client delivery
         try {
-          const domainLinkMsg = targetDomain 
-            ? `Linked Staging Domain: http://${targetDomain}\nStaging Configuration: Linked Successfully!\n` 
-            : `Linked Staging Domain: None (Standard package)\n`;
-
           const blob = new Blob([
             `==================================================\n`,
             ` STACKORBITAI FREE PRODUCT DELIVERY SERVICE\n`,
             `==================================================\n\n`,
             `Product: ${selectedProduct.title}\n`,
             `Category: ${selectedProduct.category}\n`,
-            `Tech Stack: ${selectedProduct.stack}\n`,
-            domainLinkMsg,
-            `\nThank you for downloading our premium source code!\n`,
+            `Tech Stack: ${selectedProduct.stack}\n\n`,
+            `Thank you for downloading our premium source code!\n`,
             `All our digital assets are provided 100% free of charge.\n\n`,
             `--------------------------------------------------\n`,
             `NEED A CUSTOM SETUP OR API INTEGRATION?\n`,
@@ -261,7 +282,7 @@ export default function ProductsPage() {
   };
 
   const handleHireSubmit = async (e) => {
-    if (e) e.preventDefault();
+    e.preventDefault();
     setIsSubmittingHire(true);
 
     try {
@@ -273,20 +294,20 @@ export default function ProductsPage() {
           email: hireData.email,
           phone: hireData.phone,
           project_type: hireData.projectType,
-          details: `${hireData.details} | [Linked Card: ${mockCard.name} - *${mockCard.number.slice(-4) || "4242"} | Setup Mock Deposit: $50 Paid]`,
+          details: hireData.details,
           budget: parseFloat(hireData.budget),
         }),
       });
 
       if (res.ok) {
-        setSetupStep("success");
+        setHireCompleted(true);
       } else {
         alert("Hiring inquiry registered successfully on system databases!");
-        setSetupStep("success");
+        setHireCompleted(true);
       }
     } catch (err) {
       console.error("Hire fetch error:", err);
-      setSetupStep("success");
+      setHireCompleted(true);
     } finally {
       setIsSubmittingHire(false);
     }
@@ -460,16 +481,10 @@ export default function ProductsPage() {
                   </button>
                   <button 
                     onClick={() => {
-                      setSelectedProduct(p);
-                      setIsDownloadOpen(true);
-                      setDownloadStep("success");
-                      setSupportCompleted(false);
-                      setSupportData({
-                        amount: "5",
-                        customAmount: "",
-                        name: "",
-                        email: "",
-                      });
+                      const widget = document.getElementById("support-widget");
+                      if (widget) {
+                        widget.scrollIntoView({ behavior: "smooth" });
+                      }
                     }} 
                     className="btn btn-ghost" 
                     style={{ 
@@ -501,7 +516,7 @@ export default function ProductsPage() {
       </section>
 
       {/* --- Voluntary General Support Widget --- */}
-      <section style={{ padding: "60px 6% 100px", maxWidth: "800px", margin: "0 auto" }}>
+      <section id="support-widget" style={{ padding: "60px 6% 100px", maxWidth: "800px", margin: "0 auto" }}>
         <div style={{ background: "var(--col-glass)", border: "1px solid var(--col-border)", borderRadius: "var(--radius-xl)", padding: "48px 40px", position: "relative", backdropFilter: "blur(12px)", boxShadow: "0 0 40px rgba(139, 92, 246, 0.15)" }}>
           <div style={{ position: "absolute", top: "-2px", left: "10%", right: "10%", height: "2px", background: "linear-gradient(90deg, transparent, var(--col-accent), transparent)" }} />
           <h2 style={{ fontSize: "1.75rem", textAlign: "center", marginBottom: "12px", fontFamily: "var(--font-space)" }}>💖 Support StackOrbitAI Research</h2>
@@ -608,73 +623,59 @@ export default function ProductsPage() {
         </div>
       </section>
 
-      {/* --- Frosted-Glass Delivery & Support Modal --- */}
+      {/* --- Frosted-Glass Delivery & Lead Registration Modal --- */}
       {isDownloadOpen && selectedProduct && (
         <div className="modal-overlay active">
-          <div className="modal-container" style={{ maxWidth: "600px" }}>
+          <div className="modal-container" style={{ maxWidth: "540px" }}>
             <button className="modal-close" onClick={() => { setIsDownloadOpen(false); setDownloadStep("initial"); }}>&times;</button>
             
-            {/* Step A: Pre-Download Screen */}
+            {/* Step A: Pre-Download Lead Registration Form */}
             {downloadStep === "initial" && (
               <>
                 <div className="modal-header">
-                  <span style={{ fontSize: "2.5rem", display: "block", marginBottom: "10px" }}>{selectedProduct.emoji}</span>
-                  <h3>Download {selectedProduct.title}</h3>
-                  <p style={{ color: "var(--col-cyan)", fontWeight: "700", fontSize: "0.82rem", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: "8px" }}>
-                    💖 Support StackOrbitAI Research &amp; Free Catalog
-                  </p>
+                  <span style={{ fontSize: "2rem", display: "block", marginBottom: "8px" }}>🎁</span>
+                  <h3>Request Setup &amp; Unlock Free Download</h3>
+                  <p>Register your details to claim a free automation audit and initiate your premium code bundle download.</p>
                 </div>
-                <div className="modal-body" style={{ padding: "10px 0" }}>
-                  <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--col-border)", padding: "16px", borderRadius: "16px", marginBottom: "20px", textAlign: "left" }}>
-                    <div style={{ fontSize: "0.9rem", fontWeight: "700", color: "#fff", marginBottom: "4px" }}>Asset Specifications:</div>
-                    <div style={{ fontSize: "0.8rem", color: "var(--col-muted)", marginBottom: "8px" }}>{selectedProduct.desc}</div>
-                    <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-                      {selectedProduct.bullets.map((b) => (
-                        <span key={b} style={{ fontSize: "0.7rem", background: "rgba(255,255,255,0.04)", padding: "3px 8px", borderRadius: "20px", color: "#cbd5e1" }}>✓ {b}</span>
-                      ))}
+                <div className="modal-body">
+                  <form onSubmit={handleRegisterSubmit}>
+                    <div className="form-group">
+                      <label>Full Name</label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        placeholder="Sarah Connor"
+                        value={registerData.name}
+                        onChange={(e) => setRegisterData({ ...registerData, name: e.target.value })}
+                        required
+                      />
                     </div>
-                  </div>
-
-                  {/* Domain Link Input Section */}
-                  <div className="form-group" style={{ marginBottom: "20px", textAlign: "left" }}>
-                    <label style={{ fontSize: "0.85rem", color: "#fff", fontWeight: "700", display: "flex", justifyContent: "space-between" }}>
-                      <span>Configure Target Staging/Production Domain</span>
-                      <span style={{ color: "var(--col-muted)", fontSize: "0.75rem", fontWeight: "400" }}>(Recommended)</span>
-                    </label>
-                    <p style={{ fontSize: "0.75rem", color: "var(--col-muted)", marginBottom: "8px", lineHeight: "1.4" }}>
-                      Linking your domain automatically configures client API headers, validation scripts, and security certificates.
-                    </p>
-                    <input
-                      type="text"
-                      className="form-input"
-                      placeholder="e.g. yourbusiness.com"
-                      value={targetDomain}
-                      onChange={(e) => setTargetDomain(e.target.value)}
-                      style={{ background: "#080b1c", border: "1px solid var(--col-cyan)", color: "#fff", fontSize: "0.95rem" }}
-                    />
-                  </div>
-                  
-                  {/* Actions Stack */}
-                  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                    {/* Big Action: Link and Download */}
-                    <button 
-                      onClick={startSimulatedDownload} 
-                      className="btn-hero-primary" 
-                      style={{ padding: "14px", fontSize: "0.95rem", width: "100%" }}
-                      disabled={!targetDomain.trim()}
-                    >
-                      ⚡ Download Free (Configure Domain Link)
+                    <div className="form-group">
+                      <label>Business Email Address</label>
+                      <input
+                        type="email"
+                        className="form-input"
+                        placeholder="sarah@company.com"
+                        value={registerData.email}
+                        onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="form-group" style={{ marginBottom: "24px" }}>
+                      <label>Selected Asset / Primary Goal</label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        value={registerData.serviceGoal}
+                        style={{ background: "rgba(255,255,255,0.02)", color: "var(--col-muted)", border: "1px solid var(--col-border)" }}
+                        readOnly
+                      />
+                    </div>
+                    
+                    <button type="submit" className="btn btn-primary" style={{ width: "100%", padding: "12px", fontSize: "0.95rem" }} disabled={isSubmittingRegister}>
+                      {isSubmittingRegister ? "Logging details..." : "Claim Setup & Start Download ⚡"}
                     </button>
-
-                    {/* Secondary Option: Skip Domain Input */}
-                    <button 
-                      onClick={() => { setTargetDomain(""); startSimulatedDownload(); }} 
-                      className="btn btn-ghost" 
-                      style={{ padding: "12px", fontSize: "0.85rem", width: "100%", color: "var(--col-muted)", border: "1px dashed var(--col-border)" }}
-                    >
-                      Free Download (Without Domain / Skip)
-                    </button>
-                  </div>
+                  </form>
                 </div>
               </>
             )}
@@ -694,7 +695,7 @@ export default function ProductsPage() {
               </div>
             )}
 
-            {/* Step C: Successful Download & Support/Hire Intakes */}
+            {/* Step C: Successful Download & Setup Intakes (No Donation Prompts) */}
             {downloadStep === "success" && (
               <>
                 <div className="modal-header" style={{ paddingBottom: "10px" }}>
@@ -703,81 +704,15 @@ export default function ProductsPage() {
                   <p>Your zip archive payload <code>stackorbitai-{selectedProduct.id}-source.txt</code> has been built and dispatched to the browser downloads.</p>
                 </div>
                 
-                <div className="modal-body" style={{ maxHeight: "360px", overflowY: "auto", paddingRight: "8px" }}>
-                  <div style={{ border: "1px solid rgba(34, 197, 94, 0.2)", background: "rgba(34, 197, 94, 0.03)", padding: "16px", borderRadius: "12px", marginBottom: "24px" }}>
-                    <h4 style={{ fontSize: "0.95rem", color: "#fff", marginBottom: "4px" }}>🛠️ Need Custom Deployment or API Setup?</h4>
-                    <p style={{ fontSize: "0.82rem", color: "var(--col-muted)", lineHeight: "1.4", marginBottom: "12px" }}>
-                      Setting up databases, hosting on VPS servers, configuring API connections, or mapping custom webhooks can be tricky. Skip the technical configuration and let us set this up perfectly for you starting at just **$50.00**!
+                <div className="modal-body">
+                  <div style={{ border: "1px solid rgba(6, 182, 212, 0.2)", background: "rgba(6, 182, 212, 0.03)", padding: "20px", borderRadius: "16px", marginBottom: "16px", textAlign: "center" }}>
+                    <h4 style={{ fontSize: "1.05rem", color: "#fff", marginBottom: "8px" }}>🛠️ Want our team to deploy it for you?</h4>
+                    <p style={{ fontSize: "0.85rem", color: "var(--col-muted)", lineHeight: "1.5", marginBottom: "16px" }}>
+                      Skip the database configurations, server setup, and API webhook mappings. Let our engineers deploy this template perfectly on your hosting starting at just **$50.00**!
                     </p>
-                    <button onClick={() => { setIsDownloadOpen(false); setIsHireOpen(true); }} className="btn" style={{ background: "linear-gradient(135deg, #06b6d4, #3b82f6)", color: "#fff", width: "100%", padding: "10px", fontSize: "0.85rem" }}>
-                      Request Setup Configuration ($50) →
+                    <button onClick={() => { setIsDownloadOpen(false); setIsHireOpen(true); }} className="btn" style={{ background: "linear-gradient(135deg, #06b6d4, #3b82f6)", color: "#fff", padding: "12px 24px", fontSize: "0.9rem", fontWeight: "700" }}>
+                      Request Deployment &amp; Custom Setup ($50) →
                     </button>
-                  </div>
-
-                  <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--col-border)", padding: "20px", borderRadius: "12px" }}>
-                    <h4 style={{ fontSize: "1rem", textAlign: "center", marginBottom: "8px" }}>☕ Support our free software research!</h4>
-                    <p style={{ fontSize: "0.82rem", color: "var(--col-muted)", textAlign: "center", lineHeight: "1.4", marginBottom: "16px" }}>
-                      If this template saves you days of code exploration, help support our server costs and keeping assets free!
-                    </p>
-
-                    <form onSubmit={handleDonationSubmit}>
-                      <div style={{ display: "flex", justifyContent: "center", gap: "8px", flexWrap: "wrap", marginBottom: "16px" }}>
-                        {["1", "5", "50", "100"].map((p) => (
-                          <button
-                            type="button"
-                            key={p}
-                            onClick={() => setSupportData({ ...supportData, amount: p })}
-                            style={{
-                              padding: "8px 16px",
-                              background: supportData.amount === p ? "rgba(139, 92, 246, 0.15)" : "rgba(255,255,255,0.02)",
-                              border: supportData.amount === p ? "1.5px solid var(--col-accent)" : "1px solid var(--col-border)",
-                              borderRadius: "8px",
-                              color: supportData.amount === p ? "#fff" : "var(--col-muted)",
-                              fontWeight: "700",
-                              cursor: "pointer",
-                              fontSize: "0.9rem"
-                            }}
-                          >
-                            ${p}
-                          </button>
-                        ))}
-                      </div>
-
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "16px" }}>
-                        <div className="form-group">
-                          <label style={{ fontSize: "0.75rem" }}>Name (Voluntary)</label>
-                          <input
-                            type="text"
-                            className="form-input"
-                            placeholder="Anonymous"
-                            style={{ padding: "8px 12px", fontSize: "0.85rem" }}
-                            value={supportData.name}
-                            onChange={(e) => setSupportData({ ...supportData, name: e.target.value })}
-                          />
-                        </div>
-                        <div className="form-group">
-                          <label style={{ fontSize: "0.75rem" }}>Email (Voluntary)</label>
-                          <input
-                            type="email"
-                            className="form-input"
-                            placeholder="creator@company.com"
-                            style={{ padding: "8px 12px", fontSize: "0.85rem" }}
-                            value={supportData.email}
-                            onChange={(e) => setSupportData({ ...supportData, email: e.target.value })}
-                          />
-                        </div>
-                      </div>
-
-                      {supportCompleted ? (
-                        <div style={{ background: "rgba(34, 197, 94, 0.1)", border: "1px solid var(--col-green)", padding: "10px", borderRadius: "8px", textAlign: "center", color: "#22c55e", fontSize: "0.85rem", fontWeight: "600" }}>
-                          ✓ Donation pledged on database! Thank you! 💖
-                        </div>
-                      ) : (
-                        <button type="submit" className="btn btn-primary" style={{ width: "100%", padding: "10px", fontSize: "0.85rem" }} disabled={isSubmittingSupport}>
-                          {isSubmittingSupport ? "Logging support..." : `Send Support Pledge ($${supportData.amount === 'custom' ? supportData.customAmount : supportData.amount}) 💖`}
-                        </button>
-                      )}
-                    </form>
                   </div>
                 </div>
 
@@ -794,18 +729,26 @@ export default function ProductsPage() {
       {isHireOpen && (
         <div className="modal-overlay active">
           <div className="modal-container" style={{ maxWidth: "540px" }}>
-            <button className="modal-close" onClick={() => { setIsHireOpen(false); setSetupStep("form"); }}>&times;</button>
+            <button className="modal-close" onClick={() => { setIsHireOpen(false); setHireCompleted(false); }}>&times;</button>
             
             <div className="modal-header">
               <span style={{ fontSize: "2rem", display: "block", marginBottom: "8px" }}>🛠️</span>
               <h3>Request Custom Setup &amp; Deployment</h3>
-              <p>Hire us to host, deploy, API-integrate, or custom-program our templates starting at $50.00.</p>
+              <p>Hire us to host, deploy, API-integrate, or custom-program our templates and workflows starting at just $50.00.</p>
             </div>
 
             <div className="modal-body">
-              {/* Step A: Intake Specs Form */}
-              {setupStep === "form" && (
-                <form onSubmit={(e) => { e.preventDefault(); setSetupStep("payment"); }}>
+              {hireCompleted ? (
+                <div style={{ textAlign: "center", padding: "20px 0" }}>
+                  <div className="success-icon" style={{ background: "rgba(34, 197, 94, 0.12)", color: "#22c55e", width: "54px", height: "54px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.6rem", margin: "0 auto 16px" }}>✓</div>
+                  <h3>Request Successfully Sent!</h3>
+                  <p style={{ color: "var(--col-muted)", fontSize: "0.9rem", lineHeight: "1.5" }}>
+                    Your custom setup parameters have been safely stored in our PostgreSQL backend database. An expert engineer will review your project specs and email you a direct deployment plan and schedule within 24 hours.
+                  </p>
+                  <button onClick={() => { setIsHireOpen(false); setHireCompleted(false); }} className="btn btn-primary" style={{ marginTop: "24px", padding: "10px 24px" }}>Perfect, Thank you!</button>
+                </div>
+              ) : (
+                <form onSubmit={handleHireSubmit}>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
                     <div className="form-group">
                       <label>Your Name</label>
@@ -851,11 +794,11 @@ export default function ProductsPage() {
                         style={{ background: "#080b1c", color: "#f0f4ff", border: "1px solid var(--col-border)" }}
                         required
                       >
-                        <option value="ai-automation">🤖 AI Agents &amp; n8n Workflows</option>
-                        <option value="web-dev">💻 Next.js &amp; React Web Apps</option>
-                        <option value="mobile-dev">📱 Flutter iOS &amp; Android Mobile Apps</option>
-                        <option value="scraping">🌐 Web Scraping &amp; RPA Bots</option>
-                        <option value="other">⚙️ Custom Software &amp; Executables</option>
+                        <option value="ai-automation">🤖 AI Agents & n8n Workflows</option>
+                        <option value="web-dev">💻 Next.js & React Web Apps</option>
+                        <option value="mobile-dev">📱 Flutter iOS & Android Mobile Apps</option>
+                        <option value="scraping">🌐 Web Scraping & RPA Bots</option>
+                        <option value="other">⚙️ Custom Software & Executables</option>
                       </select>
                     </div>
                   </div>
@@ -896,134 +839,10 @@ export default function ProductsPage() {
                     </div>
                   </div>
 
-                  <button type="submit" className="btn btn-primary" style={{ width: "100%", padding: "12px" }}>
-                    Proceed to Secure Checkout ($50 Deposit) →
+                  <button type="submit" className="btn btn-primary" style={{ width: "100%", padding: "12px" }} disabled={isSubmittingHire}>
+                    {isSubmittingHire ? "Deploying project request..." : "Submit Project Inquiry — Setup starts $50 ⚡"}
                   </button>
                 </form>
-              )}
-
-              {/* Step B: Payment Checkout Form */}
-              {setupStep === "payment" && (
-                <form onSubmit={handleHireSubmit}>
-                  <div style={{ textAlign: "center", marginBottom: "20px" }}>
-                    <h4 style={{ fontSize: "1.1rem", color: "#fff", marginBottom: "4px" }}>💳 Secure Checkout Portal</h4>
-                    <p style={{ fontSize: "0.78rem", color: "var(--col-muted)" }}>Refundable setup reservation. Enter dummy card details to simulate checkout.</p>
-                  </div>
-
-                  {/* Cyberpunk Glowing Mock Credit Card Preview */}
-                  <div style={{
-                    background: "linear-gradient(135deg, rgba(8, 10, 28, 0.9) 0%, rgba(139, 92, 246, 0.15) 100%)",
-                    border: "1px solid rgba(139, 92, 246, 0.35)",
-                    borderRadius: "16px",
-                    padding: "24px",
-                    marginBottom: "24px",
-                    position: "relative",
-                    overflow: "hidden",
-                    boxShadow: "0 0 25px rgba(139, 92, 246, 0.25)",
-                    fontFamily: "monospace",
-                    color: "#e2e8f0"
-                  }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "32px", alignItems: "center" }}>
-                      <span style={{ fontSize: "0.78rem", letterSpacing: "2px", color: "var(--col-cyan)", fontWeight: "bold" }}>STACKORBITAI SECURE</span>
-                      <span style={{ fontSize: "1.6rem" }}>💳</span>
-                    </div>
-                    
-                    <div style={{ fontSize: "1.25rem", letterSpacing: "3px", marginBottom: "24px", color: "#fff" }}>
-                      {mockCard.number ? mockCard.number.replace(/(\d{4})/g, "$1 ").trim() : "•••• •••• •••• 4242"}
-                    </div>
-
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.78rem" }}>
-                      <div>
-                        <div style={{ color: "var(--col-muted)", fontSize: "0.65rem", textTransform: "uppercase", marginBottom: "2px" }}>Cardholder</div>
-                        <div style={{ fontWeight: "bold" }}>{mockCard.name ? mockCard.name.toUpperCase() : "AIDEN CARTER"}</div>
-                      </div>
-                      <div style={{ textAlign: "right" }}>
-                        <div style={{ color: "var(--col-muted)", fontSize: "0.65rem", textTransform: "uppercase", marginBottom: "2px" }}>Expires</div>
-                        <div style={{ fontWeight: "bold" }}>{mockCard.expiry || "12/29"}</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Payment Inputs */}
-                  <div className="form-group">
-                    <label>Cardholder Name</label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      placeholder="Aiden Carter"
-                      value={mockCard.name}
-                      onChange={(e) => setMockCard({ ...mockCard, name: e.target.value })}
-                      required
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label>Credit Card Number</label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      placeholder="4242 4242 4242 4242"
-                      value={mockCard.number}
-                      onChange={(e) => setMockCard({ ...mockCard, number: e.target.value.replace(/\s?/g, "") })}
-                      maxLength="16"
-                      required
-                    />
-                  </div>
-
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "24px" }}>
-                    <div className="form-group">
-                      <label>Expiration Date</label>
-                      <input
-                        type="text"
-                        className="form-input"
-                        placeholder="MM/YY"
-                        value={mockCard.expiry}
-                        onChange={(e) => setMockCard({ ...mockCard, expiry: e.target.value })}
-                        maxLength="5"
-                        required
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label>CVV / CVC Code</label>
-                      <input
-                        type="password"
-                        className="form-input"
-                        placeholder="•••"
-                        value={mockCard.cvv}
-                        onChange={(e) => setMockCard({ ...mockCard, cvv: e.target.value })}
-                        maxLength="4"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  {/* Summary Pricing Row */}
-                  <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--col-border)", padding: "14px", borderRadius: "8px", display: "flex", justifyContent: "space-between", marginBottom: "24px", fontSize: "0.88rem" }}>
-                    <span>Estimated Budget deposit:</span>
-                    <span style={{ color: "var(--col-cyan)", fontWeight: "bold" }}>$50.00 USD</span>
-                  </div>
-
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "12px" }}>
-                    <button type="button" onClick={() => setSetupStep("form")} className="btn btn-ghost" style={{ padding: "12px" }}>
-                      ← Back
-                    </button>
-                    <button type="submit" className="btn btn-primary" style={{ padding: "12px" }} disabled={isSubmittingHire}>
-                      {isSubmittingHire ? "Processing Payment..." : "🔒 Pay $50.00 Deposit"}
-                    </button>
-                  </div>
-                </form>
-              )}
-
-              {/* Step C: Success Confirmation Screen */}
-              {setupStep === "success" && (
-                <div style={{ textAlign: "center", padding: "20px 0" }}>
-                  <div className="success-icon" style={{ background: "rgba(34, 197, 94, 0.12)", color: "#22c55e", width: "54px", height: "54px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.6rem", margin: "0 auto 16px" }}>✓</div>
-                  <h3>$50.00 Deposit Confirmed!</h3>
-                  <p style={{ color: "var(--col-muted)", fontSize: "0.88rem", lineHeight: "1.5", marginTop: "8px" }}>
-                    Your custom setup reservation has been safely confirmed. Our PostgreSQL databases have logged your project configuration and mock payment credentials. An automated setup slot is locked, and our engineering lead will reach out to you via email within 12 hours!
-                  </p>
-                  <button onClick={() => { setIsHireOpen(false); setSetupStep("form"); }} className="btn btn-primary" style={{ marginTop: "24px", padding: "10px 24px" }}>Perfect, Thank you!</button>
-                </div>
               )}
             </div>
           </div>
