@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: stackorbitai-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_pass
+      POSTGRES_DB: stackorbitai_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - coolify
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: stackorbitai-backend
+    restart: always
+    ports:
+      - "127.0.0.1:8086:8086"
+    environment:
+      PORT: 8086
+      DATABASE_URL: postgresql://postgres:postgres_pass@db:5432/stackorbitai_db
+    depends_on:
+      - db
+    networks:
+      - coolify
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: stackorbitai-frontend
+    restart: always
+    ports:
+      - "127.0.0.1:8085:3000"
+    environment:
+      HOSTNAME: "0.0.0.0"
+      PORT: 3000
+    networks:
+      - coolify
+
+volumes:
+  postgres_data:
+
+networks:
+  coolify:
+    external: true

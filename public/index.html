@@ -1,0 +1,2451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StackOrbitAI — Intelligent Automation & AI Solutions</title>
+    <meta name="description" content="StackOrbitAI delivers cutting-edge AI automation, neural intelligence, and orbital-scale solutions to supercharge your business workflows.">
+    <meta name="keywords" content="AI automation, artificial intelligence, machine learning, business automation, SaaS, StackOrbitAI">
+    <meta property="og:title" content="StackOrbitAI — Intelligent Automation & AI Solutions">
+    <meta property="og:description" content="Supercharge your business with AI-powered automation at orbital scale.">
+    <meta property="og:url" content="https://stackorbitai.com">
+    <meta property="og:type" content="website">
+    <!-- Security: CSP, X-Frame-Options, nosniff set via nginx conf -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ─── Design Tokens ─── */
+        :root {
+            --col-bg:        #04050f;
+            --col-bg2:       #070814;
+            --col-primary:   #3b82f6;
+            --col-cyan:      #06b6d4;
+            --col-purple:    #8b5cf6;
+            --col-pink:      #ec4899;
+            --col-text:      #f0f4ff;
+            --col-muted:     rgba(240,244,255,0.55);
+            --col-border:    rgba(255,255,255,0.07);
+            --col-glass:     rgba(255,255,255,0.03);
+            --col-glass2:    rgba(255,255,255,0.05);
+            --grad-primary:  linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            --grad-cyan:     linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+            --grad-hero:     linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%);
+            --shadow-lg:     0 25px 60px rgba(0,0,0,0.6);
+            --shadow-glow:   0 0 40px rgba(59,130,246,0.25);
+            --radius-xl:     24px;
+            --radius-2xl:    40px;
+            --transition:    0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        /* ─── Reset ─── */
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior:smooth; }
+        body {
+            background-color: var(--col-bg);
+            color: var(--col-text);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        a { text-decoration:none; color:inherit; }
+        img { max-width:100%; }
+
+        /* ─── Scrollbar ─── */
+        ::-webkit-scrollbar { width:6px; }
+        ::-webkit-scrollbar-track { background: var(--col-bg); }
+        ::-webkit-scrollbar-thumb { background: var(--col-primary); border-radius:3px; }
+
+        /* ─── Canvas Stars ─── */
+        #star-canvas {
+            position:fixed; top:0; left:0; width:100%; height:100%;
+            pointer-events:none; z-index:0;
+        }
+
+        /* ─── Glow Orbs ─── */
+        .orb {
+            position:fixed; border-radius:50%;
+            filter:blur(120px); pointer-events:none; z-index:0;
+            animation: orb-float 20s infinite alternate ease-in-out;
+        }
+        .orb-1 { width:700px; height:700px; background:rgba(59,130,246,0.12); top:-200px; left:-200px; }
+        .orb-2 { width:600px; height:600px; background:rgba(139,92,246,0.10); bottom:-150px; right:-150px; animation-delay:-10s; }
+        .orb-3 { width:400px; height:400px; background:rgba(6,182,212,0.08); top:40%; left:40%; animation-delay:-5s; }
+        @keyframes orb-float {
+            0%   { transform: translate(0,0) scale(1); }
+            50%  { transform: translate(30px,-30px) scale(1.05); }
+            100% { transform: translate(-20px,20px) scale(0.95); }
+        }
+
+        /* ─── Navbar ─── */
+        nav {
+            position: fixed; top:0; left:0; right:0; z-index:100;
+            display:flex; align-items:center; justify-content:space-between;
+            padding: 0 5%;
+            height: 70px;
+            background: rgba(4,5,15,0.7);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--col-border);
+            transition: background var(--transition);
+        }
+        .nav-logo {
+            display:flex; align-items:center; gap:10px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size:1.4rem; font-weight:700;
+        }
+        .nav-logo .logo-icon {
+            width:36px; height:36px;
+            background: var(--grad-hero);
+            border-radius:10px;
+            display:flex; align-items:center; justify-content:center;
+            font-size:1.1rem;
+        }
+        .logo-stack { color:var(--col-text); }
+        .logo-orbit { background:var(--grad-hero); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+
+        .nav-links { display:flex; gap:2rem; list-style:none; }
+        .nav-links a {
+            font-size:0.95rem; font-weight:500; color:var(--col-muted);
+            transition: color var(--transition);
+        }
+        .nav-links a:hover { color:var(--col-text); }
+
+        .nav-cta {
+            display:flex; gap:12px; align-items:center;
+        }
+        .btn {
+            padding:10px 22px; border-radius:12px;
+            font-size:0.9rem; font-weight:600; cursor:pointer;
+            border:none; transition: all var(--transition);
+            font-family:'Inter',sans-serif; letter-spacing:0.02em;
+        }
+        .btn-ghost {
+            background:transparent; color:var(--col-muted);
+            border:1px solid var(--col-border);
+        }
+        .btn-ghost:hover { border-color:var(--col-primary); color:var(--col-text); }
+        .btn-primary {
+            background: var(--grad-primary); color:#fff;
+            box-shadow: 0 4px 15px rgba(59,130,246,0.35);
+        }
+        .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(59,130,246,0.5); }
+
+        .hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; }
+        .hamburger span { width:24px; height:2px; background:var(--col-text); border-radius:2px; transition:var(--transition); }
+
+        /* ─── Hero ─── */
+        #hero {
+            position:relative; z-index:1;
+            min-height:100vh;
+            display:flex; flex-direction:column;
+            align-items:center; justify-content:center;
+            text-align:center;
+            padding: 120px 5% 80px;
+        }
+        .hero-badge {
+            display:inline-flex; align-items:center; gap:8px;
+            padding:8px 20px;
+            background:rgba(59,130,246,0.1);
+            border:1px solid rgba(59,130,246,0.3);
+            border-radius:50px;
+            font-size:0.85rem; font-weight:600; color:var(--col-primary);
+            letter-spacing:0.05em; text-transform:uppercase;
+            margin-bottom:28px;
+            animation: fade-up 0.8s ease both;
+        }
+        .badge-dot { width:7px; height:7px; background:var(--col-primary); border-radius:50%; animation:pulse-dot 2s infinite; }
+        @keyframes pulse-dot {
+            0%,100% { box-shadow:0 0 0 0 rgba(59,130,246,0.7); }
+            50% { box-shadow:0 0 0 8px rgba(59,130,246,0); }
+        }
+        .hero-title {
+            font-family:'Space Grotesk',sans-serif;
+            font-size:clamp(2.8rem,7vw,5.5rem);
+            font-weight:700; line-height:1.08; letter-spacing:-2px;
+            margin-bottom:24px;
+            animation:fade-up 0.8s 0.1s ease both;
+        }
+        .hero-title .grad {
+            background: var(--grad-hero);
+            -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+        }
+        .hero-sub {
+            max-width:620px; font-size:1.15rem;
+            color:var(--col-muted); line-height:1.7; margin-bottom:44px;
+            animation:fade-up 0.8s 0.2s ease both;
+        }
+        .hero-actions {
+            display:flex; gap:16px; flex-wrap:wrap; justify-content:center;
+            animation:fade-up 0.8s 0.3s ease both;
+        }
+        .btn-hero-primary {
+            padding:16px 36px; font-size:1rem;
+            background: var(--grad-hero); color:#fff;
+            border-radius:14px; font-weight:700;
+            box-shadow:0 8px 30px rgba(59,130,246,0.4);
+            transition:all var(--transition); border:none; cursor:pointer;
+            font-family:'Inter',sans-serif; letter-spacing:0.02em;
+        }
+        .btn-hero-primary:hover { transform:translateY(-3px); box-shadow:0 14px 40px rgba(59,130,246,0.6); }
+        .btn-hero-outline {
+            padding:15px 36px; font-size:1rem;
+            background:transparent; color:var(--col-text);
+            border-radius:14px; font-weight:600;
+            border:1px solid rgba(255,255,255,0.15); cursor:pointer;
+            transition:all var(--transition);
+            font-family:'Inter',sans-serif;
+        }
+        .btn-hero-outline:hover { border-color:var(--col-primary); background:rgba(59,130,246,0.07); }
+
+        /* ─── Stats Bar ─── */
+        .stats-bar {
+            position:relative; z-index:1;
+            display:flex; justify-content:center; flex-wrap:wrap;
+            gap:0; margin:0 5%;
+            background:var(--col-glass);
+            border:1px solid var(--col-border);
+            border-radius:var(--radius-xl);
+            backdrop-filter:blur(20px);
+            overflow:hidden;
+            animation:fade-up 0.8s 0.4s ease both;
+        }
+        .stat-item {
+            flex:1; min-width:180px;
+            padding:32px 24px; text-align:center;
+            border-right:1px solid var(--col-border);
+            transition:background var(--transition);
+        }
+        .stat-item:last-child { border-right:none; }
+        .stat-item:hover { background:var(--col-glass2); }
+        .stat-num {
+            font-family:'Space Grotesk',sans-serif;
+            font-size:2.2rem; font-weight:700;
+            background:var(--grad-hero);
+            -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+        }
+        .stat-label { font-size:0.85rem; color:var(--col-muted); margin-top:4px; font-weight:500; }
+
+        /* ─── Section Base ─── */
+        section { position:relative; z-index:1; padding:100px 5%; }
+        .section-tag {
+            display:inline-block;
+            font-size:0.8rem; font-weight:700;
+            color:var(--col-cyan); letter-spacing:0.12em; text-transform:uppercase;
+            margin-bottom:12px;
+        }
+        .section-title {
+            font-family:'Space Grotesk',sans-serif;
+            font-size:clamp(2rem,4vw,3rem);
+            font-weight:700; letter-spacing:-1px;
+            margin-bottom:16px; line-height:1.15;
+        }
+        .section-sub {
+            max-width:580px; color:var(--col-muted);
+            font-size:1.05rem; line-height:1.7;
+        }
+
+        /* ─── Features ─── */
+        #features { background:var(--col-bg2); }
+        .features-header { text-align:center; margin-bottom:64px; }
+        .features-header .section-sub { margin:0 auto; }
+
+        .features-grid {
+            display:grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap:24px; max-width:1200px; margin:0 auto;
+        }
+        .feature-card {
+            padding:36px 32px;
+            background:var(--col-glass);
+            border:1px solid var(--col-border);
+            border-radius:var(--radius-xl);
+            transition:all var(--transition);
+            position:relative; overflow:hidden;
+        }
+        .feature-card::before {
+            content:''; position:absolute;
+            top:0; left:0; right:0; height:1px;
+            background:var(--grad-hero); opacity:0;
+            transition:opacity var(--transition);
+        }
+        .feature-card:hover {
+            transform:translateY(-6px);
+            border-color:rgba(59,130,246,0.3);
+            box-shadow:var(--shadow-glow);
+        }
+        .feature-card:hover::before { opacity:1; }
+        .feature-icon {
+            width:52px; height:52px; border-radius:14px;
+            display:flex; align-items:center; justify-content:center;
+            font-size:1.4rem; margin-bottom:20px;
+        }
+        .fi-blue   { background:rgba(59,130,246,0.15); }
+        .fi-purple { background:rgba(139,92,246,0.15); }
+        .fi-cyan   { background:rgba(6,182,212,0.15); }
+        .fi-pink   { background:rgba(236,72,153,0.15); }
+        .fi-green  { background:rgba(34,197,94,0.15); }
+        .fi-orange { background:rgba(251,146,60,0.15); }
+
+        .feature-card h3 { font-size:1.15rem; font-weight:700; margin-bottom:10px; font-family:'Space Grotesk',sans-serif; }
+        .feature-card p { color:var(--col-muted); font-size:0.95rem; line-height:1.65; }
+
+        /* ─── How It Works ─── */
+        #how-it-works { max-width:1200px; margin:0 auto; }
+        .how-content { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
+        .how-steps { display:flex; flex-direction:column; gap:32px; }
+        .how-step {
+            display:flex; gap:20px; align-items:flex-start;
+            padding:24px; border-radius:var(--radius-xl);
+            border:1px solid transparent;
+            transition:all var(--transition); cursor:default;
+        }
+        .how-step:hover {
+            background:var(--col-glass2);
+            border-color:var(--col-border);
+        }
+        .step-num {
+            min-width:44px; height:44px;
+            border-radius:12px;
+            background:var(--grad-primary);
+            display:flex; align-items:center; justify-content:center;
+            font-weight:800; font-size:1rem; font-family:'Space Grotesk',sans-serif;
+        }
+        .step-text h3 { font-size:1.05rem; font-weight:700; margin-bottom:6px; }
+        .step-text p  { color:var(--col-muted); font-size:0.9rem; line-height:1.6; }
+
+        .how-visual {
+            border-radius:var(--radius-2xl);
+            background:var(--col-glass);
+            border:1px solid var(--col-border);
+            padding:40px; display:flex; flex-direction:column; gap:20px;
+            position:relative; overflow:hidden;
+        }
+        .how-visual::after {
+            content:''; position:absolute; inset:0;
+            background:radial-gradient(ellipse at 70% 30%, rgba(59,130,246,0.07), transparent 70%);
+        }
+        .visual-card {
+            background:var(--col-glass2); border:1px solid var(--col-border);
+            border-radius:16px; padding:18px 20px;
+            display:flex; align-items:center; gap:14px;
+            transition:all var(--transition); z-index:1;
+        }
+        .visual-card:hover { border-color:rgba(59,130,246,0.4); transform:scale(1.02); }
+        .vc-icon { font-size:1.5rem; }
+        .vc-info .vc-title { font-weight:600; font-size:0.95rem; margin-bottom:3px; }
+        .vc-info .vc-sub { font-size:0.8rem; color:var(--col-muted); }
+        .vc-badge {
+            margin-left:auto; padding:4px 12px;
+            border-radius:20px; font-size:0.75rem; font-weight:700;
+        }
+        .badge-live { background:rgba(34,197,94,0.15); color:#22c55e; }
+        .badge-run  { background:rgba(59,130,246,0.15); color:#3b82f6; }
+        .badge-ai   { background:rgba(139,92,246,0.15); color:#8b5cf6; }
+
+        /* ─── Use Cases ─── */
+        #use-cases { background:var(--col-bg2); }
+        .cases-grid {
+            display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+            gap:20px; max-width:1200px; margin:60px auto 0;
+        }
+        .case-card {
+            border-radius:var(--radius-xl); padding:32px 28px;
+            border:1px solid var(--col-border);
+            background:var(--col-glass);
+            transition:all var(--transition); position:relative; overflow:hidden;
+        }
+        .case-card::after {
+            content:''; position:absolute; bottom:0; left:0; right:0; height:3px;
+            background:var(--grad-hero); transform:scaleX(0);
+            transform-origin:left; transition:transform var(--transition);
+        }
+        .case-card:hover { transform:translateY(-5px); }
+        .case-card:hover::after { transform:scaleX(1); }
+        .case-emoji { font-size:2rem; margin-bottom:14px; display:block; }
+        .case-card h3 { font-weight:700; font-size:1.05rem; margin-bottom:8px; }
+        .case-card p { color:var(--col-muted); font-size:0.88rem; line-height:1.6; }
+
+        /* ─── Pricing ─── */
+        #pricing { text-align:center; }
+        .pricing-toggle {
+            display:inline-flex; gap:0;
+            background:var(--col-glass);
+            border:1px solid var(--col-border);
+            border-radius:10px; padding:4px; margin:32px auto;
+        }
+        .toggle-btn {
+            padding:8px 24px; border-radius:8px;
+            border:none; background:transparent; color:var(--col-muted);
+            font-size:0.9rem; font-weight:600; cursor:pointer;
+            font-family:'Inter',sans-serif; transition:all var(--transition);
+        }
+        .toggle-btn.active { background:var(--grad-primary); color:#fff; }
+        .pricing-grid {
+            display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+            gap:24px; max-width:1100px; margin:0 auto;
+        }
+        .price-card {
+            padding:40px 32px; border-radius:var(--radius-xl);
+            border:1px solid var(--col-border); background:var(--col-glass);
+            text-align:left; transition:all var(--transition); position:relative;
+        }
+        .price-card.popular {
+            border-color:rgba(59,130,246,0.5);
+            background:rgba(59,130,246,0.05);
+            box-shadow:var(--shadow-glow);
+        }
+        .popular-label {
+            position:absolute; top:-12px; left:50%; transform:translateX(-50%);
+            background:var(--grad-primary); padding:4px 18px; border-radius:20px;
+            font-size:0.78rem; font-weight:700; white-space:nowrap;
+        }
+        .plan-name { font-weight:700; font-size:1rem; color:var(--col-muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:12px; }
+        .plan-price {
+            font-family:'Space Grotesk',sans-serif;
+            font-size:3rem; font-weight:700; line-height:1; margin-bottom:6px;
+        }
+        .plan-period { font-size:0.9rem; color:var(--col-muted); margin-bottom:24px; }
+        .plan-features { list-style:none; display:flex; flex-direction:column; gap:12px; margin-bottom:32px; }
+        .plan-features li {
+            display:flex; align-items:center; gap:10px;
+            font-size:0.9rem; color:var(--col-muted);
+        }
+        .plan-features li .check { color:#22c55e; font-weight:700; font-size:1.1rem; }
+        .plan-btn {
+            width:100%; padding:14px; border-radius:12px;
+            font-size:0.95rem; font-weight:700; cursor:pointer;
+            font-family:'Inter',sans-serif; letter-spacing:0.02em;
+            transition:all var(--transition); border:none;
+        }
+        .plan-btn-ghost { background:transparent; color:var(--col-text); border:1px solid var(--col-border); }
+        .plan-btn-ghost:hover { border-color:var(--col-primary); background:rgba(59,130,246,0.07); }
+        .plan-btn-primary { background:var(--grad-primary); color:#fff; box-shadow:0 4px 15px rgba(59,130,246,0.35); }
+        .plan-btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(59,130,246,0.5); }
+
+        /* ─── Testimonials ─── */
+        #testimonials { background:var(--col-bg2); }
+        .testi-grid {
+            display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+            gap:24px; max-width:1200px; margin:60px auto 0;
+        }
+        .testi-card {
+            padding:32px 28px; border-radius:var(--radius-xl);
+            border:1px solid var(--col-border); background:var(--col-glass);
+            transition:all var(--transition);
+        }
+        .testi-card:hover { transform:translateY(-4px); border-color:rgba(59,130,246,0.3); }
+        .testi-stars { color:#f59e0b; margin-bottom:16px; font-size:1rem; letter-spacing:2px; }
+        .testi-text { color:var(--col-muted); font-size:0.95rem; line-height:1.7; margin-bottom:20px; font-style:italic; }
+        .testi-author { display:flex; align-items:center; gap:12px; }
+        .testi-avatar {
+            width:42px; height:42px; border-radius:50%;
+            display:flex; align-items:center; justify-content:center;
+            font-size:1.2rem; font-weight:700; color:#fff;
+        }
+        .av-blue   { background:var(--grad-primary); }
+        .av-purple { background:linear-gradient(135deg,#8b5cf6,#ec4899); }
+        .av-cyan   { background:var(--grad-cyan); }
+        .testi-name { font-weight:700; font-size:0.95rem; }
+        .testi-role { font-size:0.8rem; color:var(--col-muted); }
+
+        /* ─── CTA ─── */
+        #cta {
+            text-align:center; padding:120px 5%;
+            position:relative; overflow:hidden;
+        }
+        .cta-box {
+            max-width:800px; margin:0 auto;
+            padding:80px 60px;
+            background:var(--col-glass);
+            border:1px solid rgba(59,130,246,0.2);
+            border-radius:var(--radius-2xl);
+            backdrop-filter:blur(30px);
+            position:relative; overflow:hidden;
+            box-shadow:0 0 80px rgba(59,130,246,0.1);
+        }
+        .cta-glow {
+            position:absolute; inset:0;
+            background:radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.12), transparent 70%);
+        }
+        .cta-box h2 {
+            font-family:'Space Grotesk',sans-serif;
+            font-size:clamp(2rem,5vw,3.2rem);
+            font-weight:700; letter-spacing:-1px; margin-bottom:16px;
+            position:relative; z-index:1;
+        }
+        .cta-box p {
+            color:var(--col-muted); font-size:1.1rem; margin-bottom:40px;
+            position:relative; z-index:1;
+        }
+        .cta-actions { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; position:relative; z-index:1; }
+
+        /* ─── Footer ─── */
+        footer {
+            position:relative; z-index:1;
+            background:var(--col-bg2);
+            border-top:1px solid var(--col-border);
+            padding:60px 5% 30px;
+        }
+        .footer-grid {
+            display:grid; grid-template-columns:2fr 1fr 1fr 1fr;
+            gap:60px; max-width:1200px; margin:0 auto 50px;
+        }
+        .footer-brand .nav-logo { margin-bottom:16px; }
+        .footer-brand p { color:var(--col-muted); font-size:0.9rem; line-height:1.65; max-width:280px; }
+        .footer-col h4 { font-weight:700; margin-bottom:18px; font-size:0.95rem; }
+        .footer-col ul { list-style:none; display:flex; flex-direction:column; gap:10px; }
+        .footer-col ul li a { color:var(--col-muted); font-size:0.9rem; transition:color var(--transition); }
+        .footer-col ul li a:hover { color:var(--col-text); }
+        .footer-bottom {
+            max-width:1200px; margin:0 auto;
+            padding-top:24px; border-top:1px solid var(--col-border);
+            display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
+            font-size:0.85rem; color:var(--col-muted);
+        }
+        .social-links { display:flex; gap:12px; }
+        .social-link {
+            width:36px; height:36px; border-radius:10px;
+            background:var(--col-glass); border:1px solid var(--col-border);
+            display:flex; align-items:center; justify-content:center;
+            font-size:0.9rem; transition:all var(--transition);
+        }
+        .social-link:hover { border-color:var(--col-primary); background:rgba(59,130,246,0.1); }
+
+        /* ─── Animations ─── */
+        @keyframes fade-up {
+            from { opacity:0; transform:translateY(24px); }
+            to   { opacity:1; transform:translateY(0); }
+        }
+        .reveal { opacity:0; transform:translateY(30px); transition:opacity 0.7s ease, transform 0.7s ease; }
+        .reveal.visible { opacity:1; transform:translateY(0); }
+
+        /* ─── Mobile Menu ─── */
+        .mobile-menu {
+            display:none; position:fixed; top:70px; left:0; right:0;
+            background:rgba(4,5,15,0.97); backdrop-filter:blur(20px);
+            padding:24px 5%; flex-direction:column; gap:16px;
+            border-bottom:1px solid var(--col-border); z-index:99;
+        }
+        .mobile-menu.open { display:flex; }
+        .mobile-menu a {
+            color:var(--col-muted); font-size:1rem; font-weight:500;
+            padding:12px 0; border-bottom:1px solid var(--col-border);
+            transition:color var(--transition);
+        }
+        .mobile-menu a:hover { color:var(--col-text); }
+
+        /* ─── Responsive ─── */
+        @media (max-width:1024px) {
+            .footer-grid { grid-template-columns:1fr 1fr; gap:40px; }
+            .how-content  { grid-template-columns:1fr; gap:40px; }
+        }
+        @media (max-width:768px) {
+            .nav-links, .nav-cta { display:none; }
+            .hamburger { display:flex; }
+            .hero-title { letter-spacing:-1px; }
+            .stats-bar { border-radius:16px; }
+            .stat-item { border-right:none; border-bottom:1px solid var(--col-border); }
+            .stat-item:last-child { border-bottom:none; }
+            .footer-grid { grid-template-columns:1fr; gap:30px; }
+            .footer-bottom { flex-direction:column; text-align:center; }
+            .cta-box { padding:48px 28px; }
+        }
+
+        /* ─── Premium Custom Elements (AI Playground, Chatbot, Modal) ─── */
+        /* Playground CSS */
+        .playground-widget {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background: var(--col-glass);
+            border: 1px solid var(--col-border);
+            border-radius: var(--radius-2xl);
+            padding: 30px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .playground-widget::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: -20%;
+            width: 140%;
+            height: 140%;
+            background: radial-gradient(circle at 80% 20%, rgba(59,130,246,0.1), transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        .play-title-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--col-border);
+            padding-bottom: 12px;
+        }
+        .play-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--col-text);
+        }
+        .play-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: rgba(34,197,94,0.1);
+            color: #22c55e;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .play-indicator-dot {
+            width: 6px;
+            height: 6px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: pulse-dot 1.5s infinite;
+        }
+        .flow-config {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        .config-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .config-group label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--col-cyan);
+        }
+        .picker-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        .picker-btn {
+            background: var(--col-glass2);
+            border: 1px solid var(--col-border);
+            border-radius: 10px;
+            padding: 10px 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--col-muted);
+            transition: all var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            text-align: center;
+        }
+        .picker-btn span { font-size: 1.1rem; }
+        .picker-btn:hover {
+            border-color: rgba(59,130,246,0.3);
+            color: var(--col-text);
+            background: rgba(255,255,255,0.06);
+        }
+        .picker-btn.active {
+            background: rgba(59,130,246,0.15);
+            border-color: var(--col-primary);
+            color: var(--col-text);
+            box-shadow: 0 0 12px rgba(59,130,246,0.2);
+        }
+        .flow-canvas {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--col-border);
+            border-radius: 14px;
+            padding: 16px 20px;
+            position: relative;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+        .flow-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            z-index: 2;
+            width: 70px;
+            text-align: center;
+        }
+        .node-icon-wrapper {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--col-glass2);
+            border: 1px solid var(--col-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            transition: all 0.5s ease;
+        }
+        .flow-node.active .node-icon-wrapper {
+            background: var(--grad-primary);
+            border-color: var(--col-primary);
+            box-shadow: 0 0 15px rgba(59,130,246,0.5);
+            transform: scale(1.08);
+        }
+        .node-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--col-muted);
+            white-space: nowrap;
+        }
+        .flow-line {
+            flex-grow: 1;
+            height: 2px;
+            background: var(--col-border);
+            position: relative;
+            z-index: 1;
+            margin: 0 8px;
+        }
+        .flow-laser {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 25px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, var(--col-cyan), #fff, var(--col-cyan), transparent);
+            border-radius: 10px;
+            opacity: 0;
+        }
+        .flow-laser.pulsing {
+            animation: laser-sweep 1.8s infinite linear;
+            opacity: 1;
+        }
+        @keyframes laser-sweep {
+            0% { left: -30%; }
+            100% { left: 110%; }
+        }
+        .btn-run-play {
+            background: var(--grad-hero);
+            color: #fff;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(59,130,246,0.3);
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            letter-spacing: 0.02em;
+        }
+        .btn-run-play:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(59,130,246,0.5);
+        }
+        .btn-run-play:active { transform: translateY(0); }
+        .terminal-log {
+            background: #020308;
+            border: 1px solid var(--col-border);
+            border-radius: 12px;
+            padding: 14px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.72rem;
+            color: rgba(240,244,255,0.85);
+            min-height: 110px;
+            max-height: 110px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            scroll-behavior: smooth;
+        }
+        .terminal-log::-webkit-scrollbar { width: 4px; }
+        .terminal-log::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+        .log-entry {
+            display: flex;
+            gap: 6px;
+            line-height: 1.4;
+        }
+        .log-time { color: var(--col-muted); }
+        .log-tag { font-weight: bold; }
+        .log-tag.trigger { color: #f59e0b; }
+        .log-tag.agent { color: var(--col-purple); }
+        .log-tag.action { color: var(--col-cyan); }
+        .log-tag.success { color: #22c55e; }
+        .log-text { color: var(--col-text); }
+
+        /* Floating AI Chatbot CSS */
+        .chatbot-trigger {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--grad-hero);
+            box-shadow: 0 10px 30px rgba(59,130,246,0.4), 0 0 10px rgba(59,130,246,0.2);
+            border: 1px solid rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            color: #fff;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all var(--transition);
+            animation: chatbot-bounce 3s infinite alternate ease-in-out;
+        }
+        .chatbot-trigger:hover {
+            transform: scale(1.08) rotate(10deg);
+            box-shadow: 0 15px 35px rgba(59,130,246,0.6), 0 0 20px rgba(59,130,246,0.3);
+        }
+        .chatbot-trigger .badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 14px;
+            height: 14px;
+            background: #22c55e;
+            border-radius: 50%;
+            border: 2px solid var(--col-bg);
+            animation: pulse-dot 1.5s infinite;
+        }
+        @keyframes chatbot-bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-8px); }
+        }
+        .chatbot-window {
+            position: fixed;
+            bottom: 105px;
+            right: 30px;
+            width: 380px;
+            height: 520px;
+            border-radius: var(--radius-xl);
+            background: rgba(6,8,22,0.92);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: var(--shadow-lg), 0 20px 50px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15);
+        }
+        .chatbot-window.open {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+        .chat-header {
+            padding: 16px 20px;
+            background: var(--col-glass2);
+            border-bottom: 1px solid var(--col-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .chat-header-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .chat-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--grad-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+        .chat-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 2px;
+        }
+        .chat-status {
+            font-size: 0.72rem;
+            color: #22c55e;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 600;
+        }
+        .chat-status-dot {
+            width: 5px;
+            height: 5px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+        .chat-close {
+            background: transparent;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--col-muted);
+            cursor: pointer;
+            transition: color var(--transition);
+        }
+        .chat-close:hover { color: var(--col-text); }
+        .chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            scroll-behavior: smooth;
+        }
+        .chat-messages::-webkit-scrollbar { width: 4px; }
+        .chat-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+        
+        .chat-bubble {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            position: relative;
+        }
+        .chat-bubble.bot {
+            background: var(--col-glass);
+            border: 1px solid var(--col-border);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            color: var(--col-text);
+        }
+        .chat-bubble.user {
+            background: var(--grad-primary);
+            color: #fff;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 15px rgba(59,130,246,0.2);
+        }
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            height: 20px;
+            padding: 0 4px;
+        }
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--col-muted);
+            border-radius: 50%;
+            animation: typing-bounce 1.4s infinite ease-in-out;
+        }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing-bounce {
+            0%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-6px); }
+        }
+        
+        .chat-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px 20px 16px;
+            border-top: 1px solid transparent;
+        }
+        .chat-pill {
+            background: var(--col-glass2);
+            border: 1px solid var(--col-border);
+            color: var(--col-muted);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .chat-pill:hover {
+            border-color: var(--col-primary);
+            color: var(--col-text);
+            background: rgba(59,130,246,0.08);
+        }
+        .chat-input-area {
+            padding: 16px 20px;
+            background: rgba(0,0,0,0.2);
+            border-top: 1px solid var(--col-border);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .chat-input {
+            flex-grow: 1;
+            background: var(--col-glass);
+            border: 1px solid var(--col-border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: var(--col-text);
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color var(--transition);
+        }
+        .chat-input::placeholder { color: var(--col-muted); }
+        .chat-input:focus { border-color: var(--col-primary); }
+        .chat-send {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: var(--grad-primary);
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: all var(--transition);
+            box-shadow: 0 4px 10px rgba(59,130,246,0.2);
+        }
+        .chat-send:hover {
+            transform: scale(1.04);
+            box-shadow: 0 6px 15px rgba(59,130,246,0.3);
+        }
+
+        /* Glassmorphic Registration Modal CSS */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(2,3,10,0.75);
+            backdrop-filter: blur(15px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity var(--transition);
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-container {
+            width: 440px;
+            background: rgba(8,11,28,0.92);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg), 0 0 50px rgba(59,130,246,0.15);
+            overflow: hidden;
+            position: relative;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15);
+        }
+        .modal-overlay.active .modal-container {
+            transform: translateY(0) scale(1);
+        }
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: none;
+            font-size: 1.3rem;
+            color: var(--col-muted);
+            cursor: pointer;
+            transition: color var(--transition);
+            z-index: 10;
+        }
+        .modal-close:hover { color: var(--col-text); }
+        .modal-header {
+            padding: 40px 40px 10px;
+            text-align: center;
+        }
+        .modal-icon {
+            font-size: 2.2rem;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+        .modal-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+        .modal-desc {
+            font-size: 0.85rem;
+            color: var(--col-muted);
+        }
+        .modal-body {
+            padding: 20px 40px 40px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--col-muted);
+        }
+        .form-input {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--col-border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            color: var(--col-text);
+            font-size: 0.9rem;
+            outline: none;
+            transition: all var(--transition);
+        }
+        .form-input:focus {
+            border-color: var(--col-primary);
+            background: rgba(255,255,255,0.05);
+            box-shadow: 0 0 10px rgba(59,130,246,0.1);
+        }
+        .modal-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            background: var(--grad-hero);
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.95rem;
+            font-family: 'Space Grotesk', sans-serif;
+            cursor: pointer;
+            transition: all var(--transition);
+            box-shadow: 0 4px 15px rgba(59,130,246,0.3);
+            margin-top: 10px;
+        }
+        .modal-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(59,130,246,0.5);
+        }
+        
+        /* Modal Success & Loading Overlays */
+        .modal-loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(8,11,28,0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 100;
+        }
+        .modal-loading-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid rgba(59,130,246,0.1);
+            border-top: 3px solid var(--col-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .modal-success-screen {
+            position: absolute;
+            inset: 0;
+            background: rgba(8,11,28,0.96);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.95);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15);
+            z-index: 101;
+        }
+        .modal-success-screen.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+        }
+        .success-circle {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: rgba(34,197,94,0.15);
+            border: 2px solid #22c55e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            color: #22c55e;
+            margin-bottom: 24px;
+            animation: scale-up 0.5s ease both;
+        }
+        @keyframes scale-up {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .success-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .success-desc {
+            font-size: 0.88rem;
+            color: var(--col-muted);
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 480px) {
+            .chatbot-window {
+                width: calc(100vw - 40px);
+                right: 20px;
+                bottom: 95px;
+                height: 480px;
+            }
+            .modal-container {
+                width: calc(100vw - 30px);
+            }
+            .modal-body {
+                padding: 20px 24px 32px;
+            }
+            .modal-header {
+                padding: 32px 24px 10px;
+            }
+            /* Visual Builder Mobile Optimizations */
+            .picker-row {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+            .flow-canvas {
+                padding: 12px 10px;
+            }
+            .flow-node {
+                width: 60px;
+            }
+            .node-icon-wrapper {
+                width: 38px;
+                height: 38px;
+                font-size: 1.1rem;
+            }
+            .node-label {
+                font-size: 0.58rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="star-canvas"></canvas>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- ─── Navbar ─── -->
+<nav id="navbar">
+    <div class="nav-logo">
+        <div class="logo-icon">🚀</div>
+        <span><span class="logo-stack">Stack</span><span class="logo-orbit">OrbitAI</span></span>
+    </div>
+    <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#use-cases">Use Cases</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+    </ul>
+    <div class="nav-cta">
+        <button class="btn btn-ghost" onclick="document.getElementById('cta').scrollIntoView({behavior:'smooth'})">Sign In</button>
+        <button class="btn btn-primary" onclick="document.getElementById('cta').scrollIntoView({behavior:'smooth'})">Get Started →</button>
+    </div>
+    <div class="hamburger" id="hamburger" role="button" aria-label="Toggle menu" tabindex="0">
+        <span></span><span></span><span></span>
+    </div>
+</nav>
+
+<div class="mobile-menu" id="mobile-menu">
+    <a href="#features"    onclick="closeMobileMenu()">Features</a>
+    <a href="#how-it-works" onclick="closeMobileMenu()">How It Works</a>
+    <a href="#use-cases"   onclick="closeMobileMenu()">Use Cases</a>
+    <a href="#pricing"     onclick="closeMobileMenu()">Pricing</a>
+    <a href="#cta"         onclick="closeMobileMenu()">Get Started →</a>
+</div>
+
+<!-- ─── Hero ─── -->
+<section id="hero">
+    <div class="hero-badge">
+        <span class="badge-dot"></span>
+        Next-Gen AI Automation Agency
+    </div>
+    <h1 class="hero-title">
+        Scale Your Business with<br>
+        <span class="grad">Autonomous AI Automation</span>
+    </h1>
+    <p class="hero-sub">
+        Deploy custom n8n AI agents, CRM pipelines, and programmatic SEO autoblogging platforms. **Start with a 100% risk-free 7-day trial. Test our service first — pay only after you see success!**
+    </p>
+    <div class="hero-actions">
+        <button class="btn-hero-primary" id="btn-start-free">Claim Free 7-Day Trial & Audit ⚡</button>
+        <button class="btn-hero-outline" id="btn-watch-demo" onclick="openRegisterModal()">Book Free Discovery Meeting</button>
+    </div>
+</section>
+
+<!-- ─── Stats Bar ─── -->
+<div class="stats-bar reveal">
+    <div class="stat-item">
+        <div class="stat-num" id="stat1">0</div>
+        <div class="stat-label">Completed Projects</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-num" id="stat2">0</div>
+        <div class="stat-label">Active AI Automations</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-num" id="stat3">0</div>
+        <div class="stat-label">Indexing Rate on GSC</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-num" id="stat4">0</div>
+        <div class="stat-label">Client Satisfaction</div>
+    </div>
+</div>
+
+<!-- ─── Features ─── -->
+<section id="features">
+    <div class="features-header">
+        <div class="section-tag">Specialized AI & Software Services</div>
+        <h2 class="section-title">End-to-End Delivery Across<br>All Software & AI Domains</h2>
+        <p class="section-sub">From modern full-stack web platforms and cross-platform mobile applications to self-directed AI agents and visual n8n workflow automations.</p>
+    </div>
+    <div class="features-grid">
+        <div class="feature-card reveal">
+            <div class="feature-icon fi-blue">🤖</div>
+            <h3>AI Chatbots</h3>
+            <p>Smart conversational support and lead capture agents powered by Gemini, Claude, and GPT-4 for 24/7 client interactions.</p>
+        </div>
+        <div class="feature-card reveal">
+            <div class="feature-icon fi-purple">🧠</div>
+            <h3>Autonomous AI Agents</h3>
+            <p>Self-directed agent systems designed to execute research, manage complex databases, and handle browser-based actions natively.</p>
+        </div>
+        <div class="feature-card reveal">
+            <div class="feature-icon fi-cyan">⚡</div>
+            <h3>Workflow Automation</h3>
+            <p>Connect and automate your operations with visual n8n pipelines, custom Zapier recipes, and optimized Make integrations.</p>
+        </div>
+        <div class="feature-card reveal">
+            <div class="feature-icon fi-pink">🔄</div>
+            <h3>CRM Automation</h3>
+            <p>Establish secure, real-time bi-directional data syncing between Salesforce, HubSpot, Notion, Slack, and internal databases.</p>
+        </div>
+        <div class="feature-card reveal">
+            <div class="feature-icon fi-green">💬</div>
+            <h3>WhatsApp & Telegram Bots</h3>
+            <p>Build custom conversational messaging bots integrated directly with live databases and backend AI models.</p>
+        </div>
+        <div class="feature-card reveal">
+            <div class="feature-icon fi-orange">🚀</div>
+            <h3>SaaS Development</h3>
+            <p>Engineer scalable, modern SaaS products and portals leveraging Next.js frontend interfaces, Node.js APIs, and PostgreSQL.</p>
+        </div>
+        <div class="feature-card reveal">
+            <div class="feature-icon fi-blue">🧩</div>
+            <h3>API Integrations</h3>
+            <p>Design, build, and deploy custom RESTful or GraphQL APIs and serverless microservices for reliable application connectivity.</p>
+        </div>
+        <div class="feature-card reveal">
+            <div class="feature-icon fi-purple">📱</div>
+            <h3>Web & Mobile Apps</h3>
+            <p>Craft premium cross-platform mobile apps for Android & iOS using Flutter, paired with responsive Next.js web client panels.</p>
+        </div>
+        <div class="feature-card reveal">
+            <div class="feature-icon fi-cyan">🌐</div>
+            <h3>AI Content Automation</h3>
+            <p>Deploy programmatic SEO (pSEO) engines and automated autoblogs integrated with Flux image generators and instant indexing APIs.</p>
+        </div>
+        <div class="feature-card reveal">
+            <div class="feature-icon fi-pink">🔍</div>
+            <h3>Browser Automation</h3>
+            <p>Automate repetitive browser operations, data extraction, logins, and robotic scraping scripts with bulletproof Python pipelines.</p>
+        </div>
+        <div class="feature-card reveal">
+            <div class="feature-icon fi-green">📞</div>
+            <h3>Realtime Voice AI Systems</h3>
+            <p>Launch conversational voice agents and automated interactive phone lines with low-latency LLM responses and text-to-speech.</p>
+        </div>
+        <div class="feature-card reveal">
+            <div class="feature-icon fi-orange">📋</div>
+            <h3>AI Task Automation</h3>
+            <p>Automate spreadsheet calculations, PDF/invoice parsing, email triage, and heavy administrative processes completely on autopilot.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ─── Technology Stack ─── -->
+<style>
+    #tech-stack {
+        background: var(--col-bg);
+        position: relative;
+        overflow: hidden;
+        padding: 100px 20px;
+    }
+    .tech-header {
+        text-align: center;
+        margin-bottom: 64px;
+    }
+    .tech-header .section-sub {
+        margin: 0 auto;
+    }
+    .tech-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 32px;
+        max-width: 1200px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 2;
+    }
+    .tech-group-card {
+        background: var(--col-glass);
+        border: 1px solid var(--col-border);
+        border-radius: var(--radius-xl);
+        padding: 40px 32px;
+        transition: all var(--transition);
+        position: relative;
+    }
+    .tech-group-card::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: var(--radius-xl);
+        border: 1px solid transparent;
+        background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(139,92,246,0.2)) border-box;
+        -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+        mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0;
+        transition: opacity var(--transition);
+    }
+    .tech-group-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(59,130,246,0.25);
+        box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.15);
+    }
+    .tech-group-card:hover::after {
+        opacity: 1;
+    }
+    .tech-icon-circle {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        margin-bottom: 24px;
+        background: rgba(59,130,246,0.1);
+        color: #60a5fa;
+    }
+    .tech-group-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+        color: #f0f4ff;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+    .tech-group-desc {
+        color: var(--col-muted);
+        font-size: 0.9rem;
+        line-height: 1.6;
+        margin-bottom: 24px;
+    }
+    .tech-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .tech-tag-item {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.06);
+        color: #d1d5db;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    .tech-group-card:hover .tech-tag-item {
+        border-color: rgba(59,130,246,0.2);
+        background: rgba(59,130,246,0.05);
+        color: #fff;
+    }
+</style>
+
+<section id="tech-stack">
+    <div class="tech-header">
+        <div class="section-tag">Modern AI Stack</div>
+        <h2 class="section-title">Our Production-Ready AI Stack</h2>
+        <p class="section-sub">A premium, future-proof combination of modern frameworks, scalable hosting, and advanced intelligence models optimized for high-performance automation.</p>
+    </div>
+    <div class="tech-grid">
+        <!-- Card 1 -->
+        <div class="tech-group-card reveal">
+            <div class="tech-icon-circle" style="background:rgba(59,130,246,0.15); color:#60a5fa;">💻</div>
+            <div class="tech-group-title">Core Languages & Frameworks</div>
+            <div class="tech-group-desc">The absolute best combination for fast SaaS client dashboards, robust backend endpoints, and intelligent agents.</div>
+            <div class="tech-tags">
+                <span class="tech-tag-item">Next.js</span>
+                <span class="tech-tag-item">Node.js</span>
+                <span class="tech-tag-item">Python</span>
+                <span class="tech-tag-item">TypeScript</span>
+            </div>
+        </div>
+        <!-- Card 2 -->
+        <div class="tech-group-card reveal">
+            <div class="tech-icon-circle" style="background:rgba(139,92,246,0.15); color:#a78bfa;">⚙️</div>
+            <div class="tech-group-title">Workflow Automation</div>
+            <div class="tech-group-desc">Visual development engines combined with direct multi-app webhook synchronization to automate manual operations.</div>
+            <div class="tech-tags">
+                <span class="tech-tag-item">n8n</span>
+                <span class="tech-tag-item">Zapier</span>
+                <span class="tech-tag-item">Make</span>
+                <span class="tech-tag-item">Webhooks</span>
+            </div>
+        </div>
+        <!-- Card 3 -->
+        <div class="tech-group-card reveal">
+            <div class="tech-icon-circle" style="background:rgba(6,182,212,0.15); color:#22d3ee;">🧠</div>
+            <div class="tech-group-title">AI Intelligence & APIs</div>
+            <div class="tech-group-desc">State-of-the-art Large Language Models and voice synthesis interfaces for cognitive processing and realtime conversation.</div>
+            <div class="tech-tags">
+                <span class="tech-tag-item">Gemini & Vertex</span>
+                <span class="tech-tag-item">Claude 3.5</span>
+                <span class="tech-tag-item">OpenAI GPT-4o</span>
+                <span class="tech-tag-item">DeepSeek</span>
+                <span class="tech-tag-item">Google Veo</span>
+            </div>
+        </div>
+        <!-- Card 4 -->
+        <div class="tech-group-card reveal">
+            <div class="tech-icon-circle" style="background:rgba(34,197,94,0.15); color:#4ade80;">🐳</div>
+            <div class="tech-group-title">Database & Scalable Hosting</div>
+            <div class="tech-group-desc">Highly reliable relational database schemas deployed in high-performance container clusters for maximum uptime and security.</div>
+            <div class="tech-tags">
+                <span class="tech-tag-item">PostgreSQL</span>
+                <span class="tech-tag-item">Docker</span>
+                <span class="tech-tag-item">Nginx Reverse Proxy</span>
+                <span class="tech-tag-item">PM2 Clustering</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── How It Works ─── -->
+<section id="how-it-works">
+    <div class="how-content">
+        <div>
+            <div class="section-tag">How It Works</div>
+            <h2 class="section-title">From idea to<br>automation in minutes</h2>
+            <p class="section-sub" style="margin-bottom:40px;">StackOrbitAI turns complex workflows into simple, reliable automations — without writing a single line of code.</p>
+            <div class="how-steps">
+                <div class="how-step reveal">
+                    <div class="step-num">01</div>
+                    <div class="step-text">
+                        <h3>Describe Your Workflow</h3>
+                        <p>Simply tell the AI what you want to automate in plain English. Our LLM understands intent and maps out the steps.</p>
+                    </div>
+                </div>
+                <div class="how-step reveal">
+                    <div class="step-num">02</div>
+                    <div class="step-text">
+                        <h3>Configure & Connect</h3>
+                        <p>Plug in your apps and data sources. Our no-code builder makes it visual, fast, and foolproof.</p>
+                    </div>
+                </div>
+                <div class="how-step reveal">
+                    <div class="step-num">03</div>
+                    <div class="step-text">
+                        <h3>Deploy & Monitor</h3>
+                        <p>Launch with one click. Track every run in real time and let AI agents self-heal failures automatically.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="how-visual reveal">
+            <!-- ─── Interactive Workflow Playground ─── -->
+            <div class="playground-widget">
+                <div class="play-title-bar">
+                    <div class="play-title">⚡ Interactive Workflow Playground</div>
+                    <div class="play-indicator">
+                        <span class="play-indicator-dot"></span>
+                        Ready
+                    </div>
+                </div>
+
+                <div class="flow-config">
+                    <!-- Step 1 Trigger -->
+                    <div class="config-group">
+                        <label>1. Select Trigger event</label>
+                        <div class="picker-row" id="trigger-row">
+                            <button class="picker-btn active" data-type="email" data-icon="📧" data-name="Email Received">
+                                <span>📧</span>Email
+                            </button>
+                            <button class="picker-btn" data-type="form" data-icon="🌐" data-name="Form Submitted">
+                                <span>🌐</span>Form
+                            </button>
+                            <button class="picker-btn" data-type="stripe" data-icon="💳" data-name="Stripe Payment">
+                                <span>💳</span>Payment
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 AI Model -->
+                    <div class="config-group">
+                        <label>2. Select AI agent action</label>
+                        <div class="picker-row" id="agent-row">
+                            <button class="picker-btn active" data-type="sentiment" data-icon="🧠" data-name="Analyze Sentiment">
+                                <span>🧠</span>Sentiment
+                            </button>
+                            <button class="picker-btn" data-type="qualify" data-icon="🤖" data-name="Qualify Lead">
+                                <span>🤖</span>Qualify
+                            </button>
+                            <button class="picker-btn" data-type="reply" data-icon="✍️" data-name="Draft response">
+                                <span>✍️</span>Draft Reply
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 Integration -->
+                    <div class="config-group">
+                        <label>3. Select target destination</label>
+                        <div class="picker-row" id="action-row">
+                            <button class="picker-btn active" data-type="slack" data-icon="💬" data-name="Post to Slack">
+                                <span>💬</span>Slack
+                            </button>
+                            <button class="picker-btn" data-type="salesforce" data-icon="🧩" data-name="Sync Salesforce">
+                                <span>🧩</span>CRM
+                            </button>
+                            <button class="picker-btn" data-type="gmail" data-icon="📨" data-name="Send Auto-Reply">
+                                <span>📨</span>Gmail
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Animated Flow Visualization -->
+                <div class="flow-canvas">
+                    <div class="flow-node active" id="node-trigger">
+                        <div class="node-icon-wrapper">📧</div>
+                        <div class="node-label">Email Received</div>
+                    </div>
+                    <div class="flow-line">
+                        <div class="flow-laser" id="laser-1"></div>
+                    </div>
+                    <div class="flow-node" id="node-agent">
+                        <div class="node-icon-wrapper">🧠</div>
+                        <div class="node-label">Analyze Sentiment</div>
+                    </div>
+                    <div class="flow-line">
+                        <div class="flow-laser" id="laser-2"></div>
+                    </div>
+                    <div class="flow-node" id="node-action">
+                        <div class="node-icon-wrapper">💬</div>
+                        <div class="node-label">Post to Slack</div>
+                    </div>
+                </div>
+
+                <!-- Execute Button -->
+                <button class="btn-run-play" id="btn-run-play">Run Custom AI Workflow ⚡</button>
+
+                <!-- Live Log Console -->
+                <div class="terminal-log" id="terminal-log">
+                    <div class="log-entry">
+                        <span class="log-time">[11:51:42]</span>
+                        <span class="log-tag success">[SYSTEM]</span>
+                        <span class="log-text">StackOrbitAI Engine initialized. Ready to execute pipeline.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── Use Cases ─── -->
+<section id="use-cases">
+    <div style="text-align: center; margin-bottom: 64px;">
+        <div class="section-tag">Specialized Expertise</div>
+        <h2 class="section-title">Comprehensive Service Delivery</h2>
+        <p class="section-sub" style="margin:0 auto;">From visual n8n pipelines to custom next-generation web, mobile, and native software engineering.</p>
+    </div>
+    <div class="cases-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 32px; max-width: 1200px; margin: 0 auto;">
+        <!-- Pillar 1 -->
+        <div class="case-card reveal" style="padding: 40px 32px; background: var(--col-glass); border: 1px solid var(--col-border); border-radius: var(--radius-xl); transition: all var(--transition);">
+            <span class="case-emoji" style="font-size: 2.2rem; display: block; margin-bottom: 20px;">🤖</span>
+            <h3 style="font-size: 1.3rem; margin-bottom: 15px; font-weight: 700; font-family: 'Space Grotesk', sans-serif;">AI Automation</h3>
+            <p style="margin-bottom: 24px; color: var(--col-muted); font-size: 0.92rem; line-height: 1.6;">Supercharge efficiency and put repetitive business workflows on 100% autopilot.</p>
+            <ul style="list-style: none; padding: 0; margin: 0; color: #d1d5db; font-size: 0.88rem; line-height: 2.2;">
+                <li><span style="color:#60a5fa; margin-right:8px;">⚡</span> AI Agents & Workflow Automation</li>
+                <li><span style="color:#60a5fa; margin-right:8px;">⚡</span> CRM Sync (HubSpot, Salesforce)</li>
+                <li><span style="color:#60a5fa; margin-right:8px;">⚡</span> Chatbots & Voice AI Automation</li>
+                <li><span style="color:#60a5fa; margin-right:8px;">⚡</span> n8n, Zapier & Make.com workflows</li>
+                <li><span style="color:#60a5fa; margin-right:8px;">⚡</span> Browser RPA & Web Scraping</li>
+                <li><span style="color:#60a5fa; margin-right:8px;">⚡</span> Intelligent Task & Content Automation</li>
+            </ul>
+        </div>
+        <!-- Pillar 2 -->
+        <div class="case-card reveal" style="padding: 40px 32px; background: var(--col-glass); border: 1px solid var(--col-border); border-radius: var(--radius-xl); transition: all var(--transition);">
+            <span class="case-emoji" style="font-size: 2.2rem; display: block; margin-bottom: 20px;">💻</span>
+            <h3 style="font-size: 1.3rem; margin-bottom: 15px; font-weight: 700; font-family: 'Space Grotesk', sans-serif;">Web Development</h3>
+            <p style="margin-bottom: 24px; color: var(--col-muted); font-size: 0.92rem; line-height: 1.6;">High-performance, modern, and fully secure web portals and applications.</p>
+            <ul style="list-style: none; padding: 0; margin: 0; color: #d1d5db; font-size: 0.88rem; line-height: 2.2;">
+                <li><span style="color:#a78bfa; margin-right:8px;">⚡</span> Full Stack Website Development</li>
+                <li><span style="color:#a78bfa; margin-right:8px;">⚡</span> Next.js & React.js Applications</li>
+                <li><span style="color:#a78bfa; margin-right:8px;">⚡</span> SaaS Platforms & Client Panels</li>
+                <li><span style="color:#a78bfa; margin-right:8px;">⚡</span> React Dashboards & Admin Panels</li>
+                <li><span style="color:#a78bfa; margin-right:8px;">⚡</span> AI-Powered & Custom Web Apps</li>
+                <li><span style="color:#a78bfa; margin-right:8px;">⚡</span> SEO & AdSense Blogs Launchpads</li>
+            </ul>
+        </div>
+        <!-- Pillar 3 -->
+        <div class="case-card reveal" style="padding: 40px 32px; background: var(--col-glass); border: 1px solid var(--col-border); border-radius: var(--radius-xl); transition: all var(--transition);">
+            <span class="case-emoji" style="font-size: 2.2rem; display: block; margin-bottom: 20px;">📱</span>
+            <h3 style="font-size: 1.3rem; margin-bottom: 15px; font-weight: 700; font-family: 'Space Grotesk', sans-serif;">Mobile App Dev</h3>
+            <p style="margin-bottom: 24px; color: var(--col-muted); font-size: 0.92rem; line-height: 1.6;">Stunning cross-platform native-feel mobile apps built to scale effortlessly.</p>
+            <ul style="list-style: none; padding: 0; margin: 0; color: #d1d5db; font-size: 0.88rem; line-height: 2.2;">
+                <li><span style="color:#22d3ee; margin-right:8px;">⚡</span> Android & iOS Mobile Apps</li>
+                <li><span style="color:#22d3ee; margin-right:8px;">⚡</span> Cross-Platform Flutter Apps</li>
+                <li><span style="color:#22d3ee; margin-right:8px;">⚡</span> Firebase Realtime Integrations</li>
+                <li><span style="color:#22d3ee; margin-right:8px;">⚡</span> Tablet Application Engineering</li>
+                <li><span style="color:#22d3ee; margin-right:8px;">⚡</span> SQLite Local Storage Schemas</li>
+                <li><span style="color:#22d3ee; margin-right:8px;">⚡</span> Push Notifications & secure Auth</li>
+            </ul>
+        </div>
+        <!-- Pillar 4 -->
+        <div class="case-card reveal" style="padding: 40px 32px; background: var(--col-glass); border: 1px solid var(--col-border); border-radius: var(--radius-xl); transition: all var(--transition);">
+            <span class="case-emoji" style="font-size: 2.2rem; display: block; margin-bottom: 20px;">⚙️</span>
+            <h3 style="font-size: 1.3rem; margin-bottom: 15px; font-weight: 700; font-family: 'Space Grotesk', sans-serif;">Software Dev</h3>
+            <p style="margin-bottom: 24px; color: var(--col-muted); font-size: 0.92rem; line-height: 1.6;">Secure native desktop applications compiled for raw platform speed and control.</p>
+            <ul style="list-style: none; padding: 0; margin: 0; color: #d1d5db; font-size: 0.88rem; line-height: 2.2;">
+                <li><span style="color:#f43f5e; margin-right:8px;">⚡</span> Windows Native Applications</li>
+                <li><span style="color:#f43f5e; margin-right:8px;">⚡</span> macOS Native Desktop Software</li>
+                <li><span style="color:#f43f5e; margin-right:8px;">⚡</span> Linux Executable Systems</li>
+                <li><span style="color:#f43f5e; margin-right:8px;">⚡</span> Background OS Automation Daemons</li>
+                <li><span style="color:#f43f5e; margin-right:8px;">⚡</span> Scripting & Data Scraping Utilities</li>
+                <li><span style="color:#f43f5e; margin-right:8px;">⚡</span> Custom Business Tools Development</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ─── Pricing ─── -->
+<section id="pricing">
+    <div class="section-tag">Pricing</div>
+    <h2 class="section-title">Simple, transparent pricing</h2>
+    <p class="section-sub" style="margin:0 auto 0;">Scale from startup to enterprise without bill shock.</p>
+    <div class="pricing-toggle">
+        <button class="toggle-btn active" id="btn-monthly" onclick="setPricing('monthly')">Monthly</button>
+        <button class="toggle-btn" id="btn-annual" onclick="setPricing('annual')">Annual <span style="color:#22c55e;font-size:0.78rem;">Save 20%</span></button>
+    </div>
+    <div class="pricing-grid">
+        <div class="price-card reveal">
+            <div class="plan-name">AI & Workflows</div>
+            <div class="plan-price" id="price-starter">$50</div>
+            <div class="plan-period">starting rate · Pay After Success</div>
+            <ul class="plan-features">
+                <li><span class="check">✓</span> n8n AI Agents, Workflows & Automations</li>
+                <li><span class="check">✓</span> Zapier & Make CRM pipeline syncs</li>
+                <li><span class="check">✓</span> Custom Chatbots & LLM Fine-Tuning</li>
+                <li><span class="check">✓</span> <strong>7-Day Free Trial & Test first</strong></li>
+                <li><span class="check">✓</span> <strong>100% Zero-Risk: Pay after success</strong></li>
+            </ul>
+            <button class="plan-btn plan-btn-ghost">Start Free 7-Day Trial</button>
+        </div>
+        <div class="price-card popular reveal">
+            <div class="popular-label">Full Stack Hub</div>
+            <div class="plan-name">Web & Mobile Apps</div>
+            <div class="plan-price" id="price-pro">$50</div>
+            <div class="plan-period">starting rate · React, Next & Flutter</div>
+            <ul class="plan-features">
+                <li><span class="check">✓</span> Flutter Android & iOS full apps</li>
+                <li><span class="check">✓</span> Firebase database & push syncs</li>
+                <li><span class="check">✓</span> React & Next.js full-stack web apps</li>
+                <li><span class="check">✓</span> Custom desktop apps & business tools</li>
+                <li><span class="check">✓</span> <strong>Try out first & Pay after satisfaction</strong></li>
+            </ul>
+            <button class="plan-btn plan-btn-primary">Order Custom Project</button>
+        </div>
+        <div class="price-card reveal">
+            <div class="plan-name">Autoblogging</div>
+            <div class="plan-price" id="price-pseo">$20</div>
+            <div class="plan-period">starting rate · complete platform</div>
+            <ul class="plan-features">
+                <li><span class="check">✓</span> E-E-A-T Compliant AI Autoblogging</li>
+                <li><span class="check">✓</span> GSC & Google Indexing API setups</li>
+                <li><span class="check">✓</span> Custom inline Flux image generators</li>
+                <li><span class="check">✓</span> Programmatic long-tail keyword clusters</li>
+                <li><span class="check">✓</span> <strong>Test Before You Invest & Use after pay</strong></li>
+            </ul>
+            <button class="plan-btn plan-btn-ghost">Deploy Programmatic SEO</button>
+        </div>
+    </div>
+</section>
+
+<!-- ─── Testimonials ─── -->
+<section id="testimonials">
+    <div style="text-align:center;">
+        <div class="section-tag">Testimonials</div>
+        <h2 class="section-title">Loved by thousands of teams</h2>
+    </div>
+    <div class="testi-grid">
+        <div class="testi-card reveal">
+            <div class="testi-stars">★★★★★</div>
+            <p class="testi-text">"StackOrbitAI cut our lead qualification time by 80%. The AI agents just work — they understand context and act on it."</p>
+            <div class="testi-author">
+                <div class="testi-avatar av-blue">S</div>
+                <div>
+                    <div class="testi-name">Sarah K.</div>
+                    <div class="testi-role">VP Growth · TechCorp</div>
+                </div>
+            </div>
+        </div>
+        <div class="testi-card reveal">
+            <div class="testi-stars">★★★★★</div>
+            <p class="testi-text">"We replaced 3 different automation tools with StackOrbitAI and saved $40k/year. The integrations are flawless."</p>
+            <div class="testi-author">
+                <div class="testi-avatar av-purple">M</div>
+                <div>
+                    <div class="testi-name">Marcus R.</div>
+                    <div class="testi-role">CTO · BuildScale</div>
+                </div>
+            </div>
+        </div>
+        <div class="testi-card reveal">
+            <div class="testi-stars">★★★★★</div>
+            <p class="testi-text">"The no-code builder is genuinely magical. Our ops team automated an entire onboarding workflow in one afternoon."</p>
+            <div class="testi-author">
+                <div class="testi-avatar av-cyan">A</div>
+                <div>
+                    <div class="testi-name">Aisha L.</div>
+                    <div class="testi-role">Head of Ops · FlowHQ</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── CTA ─── -->
+<section id="cta">
+    <div class="cta-box">
+        <div class="cta-glow"></div>
+        <h2>Ready to launch at<br><span class="grad" style="background:var(--grad-hero);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">orbital velocity?</span></h2>
+        <p>Join 10,000+ teams already automating their future with StackOrbitAI.</p>
+        <div class="cta-actions">
+            <button class="btn-hero-primary" id="btn-cta-free">Start for Free — No Credit Card</button>
+            <button class="btn-hero-outline" id="btn-cta-demo">Schedule a Demo</button>
+        </div>
+    </div>
+</section>
+
+<!-- ─── Footer ─── -->
+<footer>
+    <div class="footer-grid">
+        <div class="footer-brand">
+            <div class="nav-logo" style="margin-bottom:12px;">
+                <div class="logo-icon">🚀</div>
+                <span><span class="logo-stack">Stack</span><span class="logo-orbit">OrbitAI</span></span>
+            </div>
+            <p>The orbital AI automation platform for modern businesses. Fast, reliable, and infinitely scalable.</p>
+        </div>
+        <div class="footer-col">
+            <h4>Product</h4>
+            <ul>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#use-cases">Use Cases</a></li>
+                <li><a href="#">Integrations</a></li>
+                <li><a href="#">Changelog</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Company</h4>
+            <ul>
+                <li><a href="#">About Us</a></li>
+                <li><a href="#">Blog</a></li>
+                <li><a href="#">Careers</a></li>
+                <li><a href="#">Press</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Resources</h4>
+            <ul>
+                <li><a href="#">Documentation</a></li>
+                <li><a href="#">API Reference</a></li>
+                <li><a href="#">Community</a></li>
+                <li><a href="#">Status Page</a></li>
+                <li><a href="#">Support</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span>© 2026 StackOrbitAI. All rights reserved.</span>
+        <div style="display:flex;gap:20px;">
+            <a href="#" style="color:var(--col-muted);font-size:0.85rem;transition:color var(--transition);" onmouseover="this.style.color='#fff'" onmouseout="this.style.color=''">Privacy Policy</a>
+            <a href="#" style="color:var(--col-muted);font-size:0.85rem;transition:color var(--transition);" onmouseover="this.style.color='#fff'" onmouseout="this.style.color=''">Terms of Service</a>
+        </div>
+        <div class="social-links">
+            <a href="#" class="social-link" aria-label="Twitter">𝕏</a>
+            <a href="#" class="social-link" aria-label="LinkedIn">in</a>
+            <a href="#" class="social-link" aria-label="GitHub">⌨</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // ── Star Canvas ──
+    (function() {
+        const canvas = document.getElementById('star-canvas');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        function makeStars() {
+            stars = [];
+            for (let i = 0; i < 160; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    r: Math.random() * 1.2 + 0.2,
+                    a: Math.random(),
+                    speed: Math.random() * 0.004 + 0.001,
+                    phase: Math.random() * Math.PI * 2
+                });
+            }
+        }
+        function draw(t) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(s => {
+                const alpha = s.a * (0.5 + 0.5 * Math.sin(t * s.speed * 1000 + s.phase));
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255,255,255,' + alpha + ')';
+                ctx.fill();
+            });
+            requestAnimationFrame(draw);
+        }
+        resize();
+        makeStars();
+        window.addEventListener('resize', () => { resize(); makeStars(); });
+        requestAnimationFrame(draw);
+    })();
+
+    // ── Reveal on Scroll ──
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // ── Animated Counter ──
+    function animateCount(el, target, suffix, duration) {
+        let start = null;
+        const isFloat = target % 1 !== 0;
+        function step(ts) {
+            if (!start) start = ts;
+            const p = Math.min((ts - start) / duration, 1);
+            const ease = 1 - Math.pow(1 - p, 3);
+            const val = isFloat ? (target * ease).toFixed(1) : Math.floor(target * ease);
+            el.textContent = val + suffix;
+            if (p < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+    }
+    const statsBar = document.querySelector('.stats-bar');
+    let statsDone = false;
+    const statsObserver = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting && !statsDone) {
+            statsDone = true;
+            animateCount(document.getElementById('stat1'), 500, '+', 2000);
+            animateCount(document.getElementById('stat2'), 150, '+', 2000);
+            animateCount(document.getElementById('stat3'), 98.2, '%', 1800);
+            animateCount(document.getElementById('stat4'), 100, '%', 1600);
+        }
+    }, { threshold: 0.5 });
+    statsObserver.observe(statsBar);
+
+    // ── Pricing Toggle ──
+    function setPricing(mode) {
+        const monthly = { starter: '$50', pro: '$50', pseo: '$20' };
+        const annual  = { starter: '$40', pro: '$40', pseo: '$16' };
+        const prices  = mode === 'annual' ? annual : monthly;
+        
+        document.getElementById('price-starter').textContent = prices.starter;
+        document.getElementById('price-pro').textContent = prices.pro;
+        document.getElementById('price-pseo').textContent = prices.pseo;
+        
+        const periods = document.querySelectorAll('.plan-period');
+        if (periods.length >= 3) {
+            if (mode === 'annual') {
+                periods[0].textContent = 'per month · billed annually';
+                periods[1].textContent = 'per month · billed annually';
+                periods[2].textContent = 'per month · billed annually';
+            } else {
+                periods[0].textContent = 'starting rate · Pay After Success';
+                periods[1].textContent = 'starting rate · React, Next & Flutter';
+                periods[2].textContent = 'starting rate · complete platform';
+            }
+        }
+        
+        document.getElementById('btn-monthly').classList.toggle('active', mode === 'monthly');
+        document.getElementById('btn-annual').classList.toggle('active', mode === 'annual');
+    }
+
+    // ── Hamburger Menu ──
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobile-menu');
+    hamburger.addEventListener('click', () => { mobileMenu.classList.toggle('open'); });
+    hamburger.addEventListener('keydown', e => { if (e.key === 'Enter') mobileMenu.classList.toggle('open'); });
+    function closeMobileMenu() { mobileMenu.classList.remove('open'); }
+
+    // ── Navbar scroll effect ──
+    window.addEventListener('scroll', () => {
+        const nav = document.getElementById('navbar');
+        nav.style.background = window.scrollY > 50
+            ? 'rgba(4,5,15,0.95)'
+            : 'rgba(4,5,15,0.7)';
+    });
+</script>
+
+<!-- ─── Floating AI Assistant Chatbot HTML ─── -->
+<div class="chatbot-trigger" id="chatbot-trigger" title="Ask OrbitAI">
+    <span>💬</span>
+    <span class="badge"></span>
+</div>
+
+<div class="chatbot-window" id="chatbot-window">
+    <div class="chat-header">
+        <div class="chat-header-info">
+            <div class="chat-avatar">🤖</div>
+            <div>
+                <div class="chat-title">OrbitAI Assistant</div>
+                <div class="chat-status">
+                    <span class="chat-status-dot"></span>
+                    online
+                </div>
+            </div>
+        </div>
+        <button class="chat-close" id="chat-close" aria-label="Close Chat">&times;</button>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+        <div class="chat-bubble bot">
+            Hello! I am OrbitAI, your automation co-pilot. How can I help you orbital-scale your workflows today?
+        </div>
+    </div>
+    <div class="chat-pills">
+        <button class="chat-pill" onclick="sendChatbotPreset('What services do you offer?')">What services do you offer?</button>
+        <button class="chat-pill" onclick="sendChatbotPreset('What is Programmatic SEO?')">What is Programmatic SEO?</button>
+        <button class="chat-pill" onclick="sendChatbotPreset('Need n8n AI Automations')">Need n8n AI Automations</button>
+    </div>
+    <div class="chat-input-area">
+        <input type="text" class="chat-input" id="chat-input" placeholder="Type a message..." aria-label="Chat input">
+        <button class="chat-send" id="chat-send" aria-label="Send Message">✈</button>
+    </div>
+</div>
+
+<!-- ─── Frosted-Glass Registration Modal HTML ─── -->
+<div class="modal-overlay" id="register-modal">
+    <div class="modal-container">
+        <button class="modal-close" id="modal-close" aria-label="Close Modal">&times;</button>
+        
+        <!-- Loading Overlay -->
+        <div class="modal-loading-overlay" id="modal-loading">
+            <div class="spinner"></div>
+            <div style="font-weight:700;font-size:0.95rem;color:var(--col-text);font-family:'Space Grotesk',sans-serif;">Creating Your Sandbox...</div>
+            <div style="font-size:0.75rem;color:var(--col-muted);">Provisioning secure workspace on global edge...</div>
+        </div>
+
+        <!-- Success Screen -->
+        <div class="modal-success-screen" id="modal-success">
+            <div class="success-circle">✓</div>
+            <h3 class="success-title">Booking Dispatch Complete!</h3>
+            <p class="success-desc">Your risk-free 7-day trial and free discovery meeting are booked. Our expert engineering team is already analyzing your process targets and will reach out via email shortly to schedule your walkthrough.</p>
+            <button class="modal-btn" onclick="closeRegisterModal()">Back to Home</button>
+        </div>
+
+        <!-- Main Form -->
+        <div class="modal-header">
+            <span class="modal-icon">🚀</span>
+            <h3 class="modal-title">Claim Your Free Audit & 7-Day Trial</h3>
+            <p class="modal-desc">Book your Free Discovery Meeting & start your 7-Day Free Trial. Test our services risk-free — pay after success.</p>
+        </div>
+        <div class="modal-body">
+            <form id="register-form" onsubmit="handleRegisterSubmit(event)">
+                <div class="form-group">
+                    <label for="reg-name">Full Name</label>
+                    <input type="text" id="reg-name" class="form-input" placeholder="Aiden Carter" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-email">Business Email Address</label>
+                    <input type="email" id="reg-email" class="form-input" placeholder="aiden@company.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-service">Select Primary Automation Goal</label>
+                    <select id="reg-service" class="form-input" style="background:#080b1c; color:#f0f4ff; border:1px solid rgba(255,255,255,0.07);" required>
+                        <option value="" disabled selected>Select an Automation Goal...</option>
+                        <option value="ai-automation">🤖 AI Automation & n8n Workflows (Starts $50 + 7-Day Free Trial)</option>
+                        <option value="adsense-blogs">🌐 AI Autoblogging & Programmatic SEO (Starts $20)</option>
+                        <option value="fullstack-web">💻 Full-Stack Web App - React / Next.js (Starts $50)</option>
+                        <option value="mobile-apps">📱 Flutter Mobile App - Android & iOS (Starts $50)</option>
+                        <option value="desktop-tools">⚙️ Custom Desktop App & Software (Starts $50)</option>
+                        <option value="other">🛠️ General Software Development Consulting</option>
+                    </select>
+                </div>
+                <button type="submit" class="modal-btn">Claim My Free Automation Audit ⚡</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ─── Interactive Playground JS ───
+    (function() {
+        const triggers = document.querySelectorAll('#trigger-row .picker-btn');
+        const agents = document.querySelectorAll('#agent-row .picker-btn');
+        const actions = document.querySelectorAll('#action-row .picker-btn');
+
+        const nodeTrigger = document.getElementById('node-trigger');
+        const nodeAgent = document.getElementById('node-agent');
+        const nodeAction = document.getElementById('node-action');
+
+        const laser1 = document.getElementById('laser-1');
+        const laser2 = document.getElementById('laser-2');
+        const runBtn = document.getElementById('btn-run-play');
+        const logConsole = document.getElementById('terminal-log');
+
+        let flowConfig = {
+            trigger: { type: 'email', icon: '📧', name: 'Email Received' },
+            agent: { type: 'sentiment', icon: '🧠', name: 'Analyze Sentiment' },
+            action: { type: 'slack', icon: '💬', name: 'Post to Slack' }
+        };
+
+        // Wire up pickers
+        setupPicker(triggers, 'trigger', nodeTrigger);
+        setupPicker(agents, 'agent', nodeAgent);
+        setupPicker(actions, 'action', nodeAction);
+
+        function setupPicker(buttons, category, nodeEl) {
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    buttons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    const icon = btn.getAttribute('data-icon');
+                    const name = btn.getAttribute('data-name');
+                    const type = btn.getAttribute('data-type');
+
+                    flowConfig[category] = { type, icon, name };
+
+                    // Update UI node immediately
+                    nodeEl.querySelector('.node-icon-wrapper').textContent = icon;
+                    nodeEl.querySelector('.node-label').textContent = name;
+                    
+                    addLog('system', `Updated pipeline node [${category.toUpperCase()}]: Connected to "${name}"`);
+                });
+            });
+        }
+
+        function addLog(type, text) {
+            const time = new Date().toTimeString().split(' ')[0];
+            const div = document.createElement('div');
+            div.className = 'log-entry';
+            
+            let tagClass = 'success';
+            if (type === 'trigger') tagClass = 'trigger';
+            if (type === 'agent') tagClass = 'agent';
+            if (type === 'action') tagClass = 'action';
+            if (type === 'system') tagClass = 'success';
+
+            div.innerHTML = `
+                <span class="log-time">[${time}]</span>
+                <span class="log-tag ${tagClass}">[${type.toUpperCase()}]</span>
+                <span class="log-text">${text}</span>
+            `;
+            logConsole.appendChild(div);
+            logConsole.scrollTop = logConsole.scrollHeight;
+        }
+
+        runBtn.addEventListener('click', async () => {
+            if (runBtn.disabled) return;
+            runBtn.disabled = true;
+            runBtn.innerHTML = `<span>⏳</span> Running Workflow Simulation...`;
+            addLog('system', `Starting execution for customized pipeline...`);
+
+            // Step 1 Trigger Highlight
+            nodeTrigger.classList.add('active');
+            addLog('trigger', `[START] Event captured: "${flowConfig.trigger.name}" (${flowConfig.trigger.icon})`);
+            await sleep(900);
+
+            // Pulse laser 1
+            laser1.classList.add('pulsing');
+            await sleep(800);
+
+            // Step 2 Agent Highlight
+            nodeAgent.classList.add('active');
+            addLog('agent', `[AI AGENT] Processing event with "${flowConfig.agent.name}" (${flowConfig.agent.icon})`);
+            
+            // Custom response based on configuration
+            let aiDecision = "";
+            if (flowConfig.agent.type === 'sentiment') {
+                aiDecision = "Detected POSITIVE sentiment (0.95 confidence score). Tagged: HIGH-VALUE.";
+            } else if (flowConfig.agent.type === 'qualify') {
+                aiDecision = "Lead Qualified: Score 92/100. Matching criteria: Enterprise customer.";
+            } else {
+                aiDecision = "Drafted Contextual Auto-Response using Gemini-2.5-flash LLM model.";
+            }
+            await sleep(1000);
+            addLog('agent', `[AI DECISION] ${aiDecision}`);
+
+            // Pulse laser 2
+            laser2.classList.add('pulsing');
+            await sleep(800);
+
+            // Step 3 Action Highlight
+            nodeAction.classList.add('active');
+            addLog('action', `[DESTINATION] Syncing processed payloads with "${flowConfig.action.name}" (${flowConfig.action.icon})`);
+            
+            let destDetail = "";
+            if (flowConfig.action.type === 'slack') {
+                destDetail = "Dispatched alert to #sales-pipeline (HTTPS Hook returned 200 OK)";
+            } else if (flowConfig.action.type === 'salesforce') {
+                destDetail = "Salesforce Contact & Lead records created. Synced successfully.";
+            } else {
+                destDetail = "Secure SMTP relay success. Auto-reply dispatched to recipient.";
+            }
+            await sleep(900);
+            addLog('action', `[SYNC] ${destDetail}`);
+
+            // Finished
+            addLog('system', `[SUCCESS] Pipeline execution finished in 4.4 seconds.`);
+            
+            runBtn.disabled = false;
+            runBtn.innerHTML = `Run Custom AI Workflow ⚡`;
+
+            // Reset lights after short delay
+            setTimeout(() => {
+                nodeTrigger.classList.remove('active');
+                nodeAgent.classList.remove('active');
+                nodeAction.classList.remove('active');
+                laser1.classList.remove('pulsing');
+                laser2.classList.remove('pulsing');
+            }, 3000);
+        });
+
+        function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+    })();
+
+    // ─── Floating Chatbot JS ───
+    const chatbotTrigger = document.getElementById('chatbot-trigger');
+    const chatbotWindow = document.getElementById('chatbot-window');
+    const chatClose = document.getElementById('chat-close');
+    const chatInput = document.getElementById('chat-input');
+    const chatSend = document.getElementById('chat-send');
+    const chatMessages = document.getElementById('chat-messages');
+
+    chatbotTrigger.addEventListener('click', () => {
+        chatbotWindow.classList.toggle('open');
+        chatbotTrigger.querySelector('.badge').style.display = 'none'; // hide notification badge
+    });
+    chatClose.addEventListener('click', () => { chatbotWindow.classList.remove('open'); });
+
+    // Handle Input
+    chatInput.addEventListener('keypress', e => { if (e.key === 'Enter') handleSendChat(); });
+    chatSend.addEventListener('click', handleSendChat);
+
+    function handleSendChat() {
+        const text = chatInput.value.trim();
+        if (!text) return;
+        
+        chatInput.value = '';
+        addUserMessage(text);
+        
+        // Bot Response
+        setTimeout(() => {
+            addBotTyping();
+            setTimeout(() => {
+                removeBotTyping();
+                const botResponse = getChatbotResponse(text);
+                addBotMessage(botResponse);
+            }, 1200);
+        }, 400);
+    }
+
+    function sendChatbotPreset(text) {
+        addUserMessage(text);
+        setTimeout(() => {
+            addBotTyping();
+            setTimeout(() => {
+                removeBotTyping();
+                const botResponse = getChatbotResponse(text);
+                addBotMessage(botResponse);
+            }, 1000);
+        }, 300);
+    }
+
+    function addUserMessage(text) {
+        const bubble = document.createElement('div');
+        bubble.className = 'chat-bubble user';
+        bubble.textContent = text;
+        chatMessages.appendChild(bubble);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function addBotMessage(text) {
+        const bubble = document.createElement('div');
+        bubble.className = 'chat-bubble bot';
+        bubble.innerHTML = text; // allow bold/links inside bot responses
+        chatMessages.appendChild(bubble);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function addBotTyping() {
+        const bubble = document.createElement('div');
+        bubble.className = 'chat-bubble bot';
+        bubble.id = 'bot-typing-indicator';
+        bubble.innerHTML = `
+            <div class="typing-indicator">
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+            </div>
+        `;
+        chatMessages.appendChild(bubble);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function removeBotTyping() {
+        const el = document.getElementById('bot-typing-indicator');
+        if (el) el.remove();
+    }
+
+    function getChatbotResponse(query) {
+        const lower = query.toLowerCase();
+        if (lower.includes('price') || lower.includes('pricing') || lower.includes('cost') || lower.includes('how much') || lower.includes('trial') || lower.includes('free') || lower.includes('pay after')) {
+            return `We offer highly competitive, budget-friendly rates with a <strong>100% risk-free guarantee</strong>:<br>
+            • 🤖 <strong>AI Automation & n8n Workflows</strong>: Starts at <strong>$50</strong> (includes a <strong>7-Day Free Trial</strong>!)<br>
+            • 🌐 <strong>AI Autoblogging & Programmatic SEO</strong>: Starts at <strong>$20</strong>!<br>
+            • 💻 <strong>Web & Mobile Apps (React/Next/Flutter)</strong>: Starts at <strong>$50</strong>!<br><br>
+            🎁 <strong>Our Zero-Risk Commitments</strong>:<br>
+            1. 📅 <strong>7-Day Free Trial</strong>: Try our automation services completely free for 7 days.<br>
+            2. 🤝 <strong>Test Before You Invest / Pay After Success</strong>: Free investment first, use the system, and pay only after you are 100% satisfied.<br>
+            3. 📞 <strong>Free Discovery Meeting</strong>: Ask us anything before starting! We'll map out a custom system for you at no cost.`;
+        }
+        if (lower.includes('service') || lower.includes('offer') || lower.includes('do you do') || lower.includes('what do you')) {
+            return `My services focus primarily on elite **AI Automation & Programmatic SEO**:<br>
+            • 🤖 <strong>AI Automation & n8n Workflows</strong>: Self-directed AI agents, multi-system CRM pipelines (Salesforce, Notion, HubSpot), and custom Zapier/Make automations.<br>
+            • 🌐 <strong>Programmatic SEO & Autoblogging</strong>: High-indexing semantic blog networks, Flux image generator integrations, GSC indexation triggers, and automated SEO pipelines.<br>
+            • 💻 <strong>Full-Stack Web Applications</strong>: React, Next.js, Node.js portals & dashboards.<br>
+            • 📱 <strong>Cross-Platform Mobile Apps</strong>: Flutter & Firebase Android/iOS apps.<br>
+            • ⚙️ <strong>Native Desktop & Custom Software Tools</strong>: Windows, macOS, Linux automation tools.`;
+        }
+        if (lower.includes('seo') || lower.includes('blog') || lower.includes('programmatic') || lower.includes('indexing') || lower.includes('autoblog')) {
+            return `My **Programmatic SEO & AI Autoblogging** systems generate high-quality, E-E-A-T compliant articles mapped to deep long-tail keyword clusters. They integrate **Google Indexing APIs** for instant indexing, **Flux/SDXL** for high-resolution inline graphics, and custom **n8n schedulers** that auto-post directly to WordPress/Next.js platforms with semantic linking tables.`;
+        }
+        if (lower.includes('n8n') || lower.includes('zapier') || lower.includes('make') || lower.includes('automation') || lower.includes('workflow') || lower.includes('agent')) {
+            return `I am an **AI Automation Specialist**! I specialize in designing and deploying custom **n8n workflows**, self-directed **n8n AI agents**, Zapier recipes, Make integrations, and complete CRM database syncs (Salesforce, Notion, HubSpot, Slack) to put your repetitive workflows on 100% autopilot.`;
+        }
+        if (lower.includes('flutter') || lower.includes('mobile') || lower.includes('android') || lower.includes('ios')) {
+            return `As part of my secondary engineering focus, I build high-performance cross-platform mobile apps for iOS and Android using **Flutter and Dart**, integrated with **Firebase** for cloud syncing, secure user auth, push notifications, and offline-first storage.`;
+        }
+        if (lower.includes('full stack') || lower.includes('react') || lower.includes('next') || lower.includes('node') || lower.includes('desktop') || lower.includes('software')) {
+            return `I build robust full-stack software using modern, secure technologies like **React, Next.js, Node.js, and SQLite/PostgreSQL**, as well as custom desktop automation utilities compiled natively for Windows, macOS, and Linux servers.`;
+        }
+        if (lower.includes('hello') || lower.includes('hi') || lower.includes('hey')) {
+            return `Hello! I'm OrbitAI, your engineering co-pilot. I can answer any questions about our <strong>n8n AI automations, Programmatic SEO (pSEO) engines, Flutter apps, web applications, and custom desktop tools</strong>. Click the pills below or ask away!`;
+        }
+        return `Interesting query! I specialize in n8n AI Automations, Programmatic SEO & Autoblogging, Flutter Mobile Apps, Next.js Web applications, and custom software. Would you like me to tell you more about our **AI Workflows**, **Programmatic SEO systems**, or **Full-Stack setups**?`;
+    }
+
+    // ─── Registration Modal JS ───
+    const regModal = document.getElementById('register-modal');
+    const modalClose = document.getElementById('modal-close');
+    const modalLoading = document.getElementById('modal-loading');
+    const modalSuccess = document.getElementById('modal-success');
+    const registerForm = document.getElementById('register-form');
+
+    // Intercept all call-to-actions to trigger registration modal
+    document.addEventListener('DOMContentLoaded', () => {
+        const ctaSelectors = [
+            '.btn-primary',
+            '.btn-hero-primary',
+            '.plan-btn',
+            '#btn-start-free',
+            '#btn-cta-free'
+        ];
+        ctaSelectors.forEach(selector => {
+            document.querySelectorAll(selector).forEach(el => {
+                // Ensure it opens modal and doesn't just do scrolling
+                el.removeAttribute('onclick');
+                el.addEventListener('click', e => {
+                    e.preventDefault();
+                    openRegisterModal();
+                });
+            });
+        });
+    });
+
+    function openRegisterModal() {
+        regModal.classList.add('active');
+        // Reset states
+        modalLoading.classList.remove('active');
+        modalSuccess.classList.remove('active');
+        registerForm.reset();
+    }
+
+    function closeRegisterModal() {
+        regModal.classList.remove('active');
+    }
+
+    modalClose.addEventListener('click', closeRegisterModal);
+    regModal.addEventListener('click', e => {
+        if (e.target === regModal) closeRegisterModal();
+    });
+
+    function handleRegisterSubmit(e) {
+        e.preventDefault();
+        modalLoading.classList.add('active');
+        
+        // Mock API deploy latency
+        setTimeout(() => {
+            modalLoading.classList.remove('active');
+            modalSuccess.classList.add('active');
+        }, 1800);
+    }
+</script>
+</body>
+</html>
