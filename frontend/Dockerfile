@@ -1,19 +1,46 @@
-# Stage 1: Build Next.js production files
-FROM node:20-alpine AS builder
+# ============================================
+# Stage 1: Dependencies install
+# ============================================
+FROM node:20-alpine AS deps
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
+
+# ============================================
+# Stage 2: Builder — Next.js standalone build
+# ============================================
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
 RUN npm run build
 
-# Stage 2: Execution layer
+# ============================================
+# Stage 3: Runner — SIRF standalone files
+# node_modules ki zaroorat NAHI hai yahan!
+# ============================================
 FROM node:20-alpine AS runner
 WORKDIR /app
+
 ENV NODE_ENV=production
-COPY package*.json ./
-RUN npm ci --only=production
-COPY --from=builder /app/next.config.mjs ./
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Non-root user for security
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
+
+# Standalone output copy karo
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next ./.next
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
 EXPOSE 3000
-CMD ["npm", "start"]
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+# standalone mode mein server.js directly run hota hai — npm start nahi!
+CMD ["node", "server.js"]
